@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
-
-This is a temporary script file.
+Hallo Welt
 """
 
 Maximum = input("Zählen bis ..? ")
