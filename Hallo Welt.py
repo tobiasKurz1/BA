@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Hallo Welt
+Hallo Welt Programm
 """
 
 Maximum = input("Zählen bis ..? ")
