@@ -18,8 +18,8 @@ with open('test.csv')as werte:
     zeilennummer = 0
     
     
-    SucheZeile = input("Welche Zeile ausgeben? (für komplette Ausgabe 0 eingeben.) ")
-    SucheZeile = int(SucheZeile)
+    SucheZeile = int(input("Welche Zeile ausgeben? (für komplette Ausgabe 0 eingeben.) "))
+
     
     #Iteration der Zeilen durch den Reader
     #Indirekt können hierdurch bestimmte Zeilen ausgegeben werden
@@ -32,5 +32,8 @@ with open('test.csv')as werte:
             if zeilennummer == SucheZeile or SucheZeile == 0:
                 print(row)
         zeilennummer += 1
-        
-    print(f'Anzahl Zeilen: {zeilennummer-1}')
+
+print(f'Anzahl Zeilen: {zeilennummer-1}')
+
+if SucheZeile > (zeilennummer-1):
+    print("Ausgewählte Zeile nicht vorhanden.")
