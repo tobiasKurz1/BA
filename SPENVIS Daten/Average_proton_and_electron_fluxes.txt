@@ -68,7 +68,7 @@
 'Orbit end: 01/02/2025 10:36:32'
  0.95, 0.00, 1.00
 'PS Annotation',  2,  0
-test, 'Trapped proton model: AP-8 MAX'
+'Trapped proton model: AP-8 MAX'
  0.05, 2.00, 0.00
 'Energy','MeV', 1,'Energy'
 'IFlux','cm!u-2!n s!u-1!n', 1,'Integral Flux'

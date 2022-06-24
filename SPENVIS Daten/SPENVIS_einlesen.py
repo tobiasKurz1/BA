@@ -52,6 +52,8 @@ with open('Average_proton_and_electron_fluxes.txt')as werte: # <-- Hier Dateinam
     counter = 1         #Zaehler für die Ausgegebenen Zeilen
     treffer = 0 
     anfang = 0
+    laengen =[]
+    ges = 0
 
         
         
@@ -69,10 +71,11 @@ with open('Average_proton_and_electron_fluxes.txt')as werte: # <-- Hier Dateinam
                 anfang = counter
                             
             if ende_block(row)==1:
-                print(f'\n* * * * * *  {blockzahl}. Block: Von Zeile {anfang} bis {counter}  * * * * * *\n')
+                print(f'\n* * * * * *  {blockzahl}. Block: Von Zeile {anfang} bis {counter}, Länge: {counter-anfang+1} Zeilen * * * * * *\n')
                 print (tabulate(ergebnisse))
                 ergebnisse.clear()
-                
+                laengen.append(counter-anfang)
+                ges = ges+(counter-anfang+1)
             
             counter += 1
 

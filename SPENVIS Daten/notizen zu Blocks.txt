@@ -1,0 +1,108 @@
+****** Average proton and electron fluxes ********
+
+Block 1:    Missionssegment 1   Average Flux Integral & differential Proton  
+
+Achsen:  73 - 75
+Daten:   76 - 104
+
+
+Block 2:    Missionssegment 1   Average Flux Integral & differential Electron 
+
+Achsen: 178 - 180
+Daten:  181 - 210
+
+
+Block 3:    Missionssegment 2   Average Flux Integral & differential Proton
+
+Achsen: 284 - 286
+Daten:  287 - 315
+
+
+Block 4:    Missionssegment 2   Average Flux Integral & differential Electron 
+
+Achsen:  389 - 391
+Daten:   392 - 421
+
+
+Block 5:    Missionssegment 3   Average Flux Integral & differential Proton
+
+Achsen:  495 - 497
+Daten:   498 - 526
+
+
+Block 6:    Missionssegment 3   Average Flux Integral & differential Electron 
+
+Achsen:  600 - 602
+Daten:   603 - 632
+
+
+Block 7:    Missionssegment 4   Average Flux Integral & differential Proton 
+
+Achsen:  706 - 708
+Daten:   709 - 737
+
+
+Block 8:    Missionssegment 4   Average Flux Integral & differential Electron 
+
+Achsen:  811 - 813
+Daten:   814 - 843
+
+
+Block 9:    Missionssegment 5   Average Flux Integral & differential Proton 
+
+Achsen:  917 - 919
+Daten:   920 - 948
+
+
+Block 10:   Missionssegment 5   Average Flux Integral & differential Electron 
+
+Achsen:  1022 - 1024
+Daten:   1025 - 1054
+
+
+Block 11:   Gesamtmission       Average Flux Integral & differential Proton
+
+Achsen:  1082 - 1084
+Daten:   1084 - 1113
+
+
+Block 12:   Gesamtmission       Average Flux Integral & differential Electron
+
+Achsen:  1141 - 1143
+Daten:   1144 - 1173
+
+
+Block 13: 
+
+Achsen:  
+Daten:   
+
+
+Block 14: 
+
+Achsen:  
+Daten:   
+
+
+Block 15: 
+
+Achsen:  
+Daten:   
+
+
+Block 16: 
+
+Achsen:  
+Daten:   
+
+
+Block 17: 
+
+Achsen:  
+Daten:   
+
+
+Block 18: 
+
+Achsen:  
+Daten:  
