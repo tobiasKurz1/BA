@@ -89,7 +89,7 @@ x_werte = []
 y_werte1 = []
 y_werte2 = []
 achsen = []
-
+satz = []
 
 #CSV-Reader bekommt Datei, mit Anweisung um welche Abstandshalter es sich handelt
 with open('Average_proton_and_electron_fluxes.txt')as werte: # <-- Hier Dateinamen einstellen
@@ -99,26 +99,41 @@ with open('Average_proton_and_electron_fluxes.txt')as werte: # <-- Hier Dateinam
     for row in csv_reader_object:
         # Oberste Zeile -> Ueberschriften festlegen
         
-        print(counter)
         
-        if anfang_block(row)==1:
-            blocknr += 1
+        blocknr = blocknr + anfang_block(row)
         
         ergebnisse.append(row) #befuellen der Ergebnisliste und Aufzaehlen der Zeilen
-        daten_sammeln(daten[blocknr-1], daten[blocknr-1]+datenlaenge[blocknr-1]-1)
-        beschiftung_sammeln(daten[blocknr-1])
+        
+        if blocknr < 13:    # ZU TESTZWECKEN
+            
+            daten_sammeln(daten[blocknr-1], daten[blocknr-1]+datenlaenge[blocknr-1]-1)
+            beschiftung_sammeln(daten[blocknr-1])
+                            
+            if ende_block(row)==1:
+                achsen = [s.replace("'","") for s in achsen]
+                plot_daten()
+                achsen.clear()
+                x_werte.clear()
+              
+                satz.append(y_werte1[:])
+                y_werte1.clear()
+                y_werte2.clear()
+            
+            
+        if anfang_block(row)==1:
+            anfang = counter
                         
         if ende_block(row)==1:
-            achsen = [s.replace("'","") for s in achsen]
-            plot_daten()
-            achsen.clear()
-            x_werte.clear()
-            y_werte1.clear()
-            y_werte2.clear()
+            print(f'\n* * * * * *  {blocknr}. Block: Von Zeile {anfang} bis {counter}, Länge: {counter-anfang+1} Zeilen * * * * * *\n')
+            print (tabulate(ergebnisse))
+            ergebnisse.clear()
+
+            
             
         counter += 1
 
-print (tabulate(ergebnisse))
+
+
 
 
 
