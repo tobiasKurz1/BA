@@ -63,7 +63,7 @@ Daten:   1025 - 1054
 Block 11:   Gesamtmission       Average Flux Integral & differential Proton
 
 Achsen:  1082 - 1084
-Daten:   1084 - 1113
+Daten:   1085 - 1113
 
 
 Block 12:   Gesamtmission       Average Flux Integral & differential Electron
