@@ -72,37 +72,48 @@ Achsen:  1141 - 1143
 Daten:   1144 - 1173
 
 
-Block 13: 
+Block 13:   Alle Segmente       Integral Peak Flux proton
 
-Achsen:  
-Daten:   
-
-
-Block 14: 
-
-Achsen:  
-Daten:   
+Achsen:  1201
+Daten:   1202 - 1206 [2] - [30]
+x-Achse: 1187 [2] - [30]
+x-Achsenbeschriftung: 1187 [31]
 
 
-Block 15: 
+Block 14:   Alle Segmente       Integral Peak Flux electron
 
-Achsen:  
-Daten:   
+Achsen:  1234
+Daten:   1235 - 1239 [2] - [31]
+x-Achse: 1220 [2 - 31]
+x-Achsenbeschriftung: 1187 [32]
 
+Block 15:   Alle Segmente       Average Flux Integral Proton
 
-Block 16: 
-
-Achsen:  
-Daten:   
-
-
-Block 17: 
-
-Achsen:  
-Daten:   
+Achsen: 1267 
+Daten:  1268 - 1272 [2] - [30]
+x-Achse : 1253 [2] - [30]
+x-Achsenbeschriftung: 1253 [31]
 
 
-Block 18: 
+Block 16:   Alle Segmente       Average Flux Integral Electron
 
-Achsen:  
-Daten:  
+Achsen:  1300
+Daten:   1301 - 1305 [2] - [31]
+x-Achse: 1286 [2 - 31]
+x-Achsenbeschriftung: 1286 [32]  
+
+
+Block 17:   Alle Segmente       Integral Proton Spectra Segment fluence
+
+Achsen: 1333 
+Daten:  1334 - 1338 [2] - [30]
+x-Achse : 1319 [2] - [30]
+x-Achsenbeschriftung: 1319 [31]  
+
+
+Block 18:   Alle Segmente       Integral Electron Spectra Segment fluence
+
+Achsen:  1366
+Daten:   1367 - 1371 [2] - [31]
+x-Achse: 1352 [2 - 31]
+x-Achsenbeschriftung: 1352 [32] 

@@ -1,12 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jun 23 2022
-
-SPENVIS-Daten Darstellen
-
-genutzte Module: tabulate
-
-@author: Tobias Kurz
+TEST
 """
 ####### FUnktionen ########
 
@@ -35,11 +29,9 @@ def ende_block(ls):
 # Sammelt Daten aus den Bereichen in Arrays
 def daten_sammeln(grenze_u, grenze_o):
     if counter >=grenze_u and counter <=grenze_o:
-        
-        y_werte[0].extend([float(row[1])])
-        y_werte[1].extend([float(row[2])])
         x_werte.append(float(row[0]))
-
+        y_werte1.append(float(row[1]))
+        y_werte2.append(float(row[2]))
 
 # Sammelt Achsenbeschriftungen aus dem Bereich über dem Datenblock in Arrays        
 def beschiftung_sammeln(anf_daten):
@@ -53,14 +45,14 @@ def plot_daten():
     color = 'tab:red'
     ax1.set_xlabel(f'Block {blocknr}: {achsen[0]} [{achsen[1]}]') #Benennung x-Achse
     ax1.set_ylabel(f'{achsen[2]} [{achsen[3]}]', color=color)
-    ax1.plot(x_werte, y_werte[0], color=color)
+    ax1.plot(x_werte, y_werte1, color=color)
     ax1.tick_params(axis='y', labelcolor=color)
 
     ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 
     color = 'tab:blue'
     ax2.set_ylabel(f'{achsen[4]} [{achsen[5]}]', color=color)  # we already handled the x-label with ax1
-    ax2.plot(x_werte, y_werte[1], color=color)
+    ax2.plot(x_werte, y_werte2, color=color)
     ax2.tick_params(axis='y', labelcolor=color)
 
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
@@ -81,19 +73,20 @@ import csv
 import matplotlib.pyplot as plt
 
 ##  Anfangsposition der Daten Blöcke 1-12 (Achsenbeschriftungen in den drei Zeilen davor)
-daten = [76, 181, 287, 392, 498, 603, 709, 814, 920, 1025, 1085, 1144]
+daten = [76, 181, 287, 392, 498, 603, 709, 814, 920, 1025, 1085, 1144, 28, 61]
 ##  Anzahl Zeilen der Datenblöcke
-datenlaenge = [29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30]
+datenlaenge = [29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 5, 5]
 counter = 1
-blocknr = 0
+blocknr = 12
 ergebnisse = [] #Hier werden Später die Zeilen abgelegt
 x_werte = []
-y_werte = [],[]
+y_werte1 = []
+y_werte2 = []
 achsen = []
 satz = []
 
 #CSV-Reader bekommt Datei, mit Anweisung um welche Abstandshalter es sich handelt
-with open('Average_proton_and_electron_fluxes.txt')as werte: # <-- Hier Dateinamen einstellen
+with open('block_13_14.txt')as werte: # <-- Hier Dateinamen einstellen
     csv_reader_object = csv.reader(werte, delimiter=',') # <-- Hier Abstandshalter einstellen
       
     #Iteration der Zeilen durch den Reader, "row" immer die aktuell eingelesene Zeile
@@ -116,8 +109,10 @@ with open('Average_proton_and_electron_fluxes.txt')as werte: # <-- Hier Dateinam
                 achsen.clear()
                 x_werte.clear()
               
-                satz.append(y_werte[:])
-                y_werte = [],[]
+                satz.append(y_werte1[:])
+                y_werte1.clear()
+                y_werte2.clear()
+           
               
             
         if anfang_block(row)==1:
