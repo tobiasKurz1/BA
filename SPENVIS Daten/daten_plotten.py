@@ -40,7 +40,36 @@ def daten_sammeln(grenze_u, grenze_o):
         y_werte[1].extend([float(row[2])])
         x_werte.append(float(row[0]))
 
+def gesdaten_sammeln(anf_daten):
+    if counter >= anf_daten and counter <= (anf_daten+4):
+        n = counter - anf_daten
+        gesy_werte.append(row[:])
+        gesy_werte[n].pop(0)
+        gesy_werte[n].pop(0)
+        gesy_werte[n] = [float(i) for i in gesy_werte[n]]
+    
+    if counter == (anf_daten-15):
+        gesx_werte.append(row[:])
+        gesx_werte[0].pop(0)
+        gesx_werte[0].pop(0)
+        gesx_werte[0].pop(-1)
+        gesx_werte[0] = [float(i) for i in gesx_werte[0]]
+      
+        
+#def gesbeschriftung_sammeln(anf_daten):
 
+def plot_gesdaten():
+    plt.plot(gesx_werte[0], gesy_werte[0], color='r', label='Phase 1')
+    plt.plot(gesx_werte[0], gesy_werte[1], color='r', label='Phase 2')
+    plt.plot(gesx_werte[0], gesy_werte[2], color='r', label='Phase 3')
+    plt.plot(gesx_werte[0], gesy_werte[3], color='r', label='Phase 4')
+    plt.plot(gesx_werte[0], gesy_werte[4], color='r', label='Phase 5')
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlabel(f'Block {blocknr}') #Benennung x-Achse
+    
+    plt.show()
+    
 # Sammelt Achsenbeschriftungen aus dem Bereich über dem Datenblock in Arrays        
 def beschiftung_sammeln(anf_daten):
     if counter >=(anf_daten-3) and counter <= (anf_daten-1):
@@ -81,16 +110,18 @@ import csv
 import matplotlib.pyplot as plt
 
 ##  Anfangsposition der Daten Blöcke 1-12 (Achsenbeschriftungen in den drei Zeilen davor)
-daten = [76, 181, 287, 392, 498, 603, 709, 814, 920, 1025, 1085, 1144]
+daten = [76, 181, 287, 392, 498, 603, 709, 814, 920, 1025, 1085, 1144, 1202, 1235, 1268, 1301, 1334, 1367]
 ##  Anzahl Zeilen der Datenblöcke
-datenlaenge = [29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30]
+datenlaenge = [29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 5, 5, 5, 5, 5, 5]
 counter = 1
 blocknr = 0
 ergebnisse = [] #Hier werden Später die Zeilen abgelegt
 x_werte = []
 y_werte = [],[]
+gesy_werte = []
+gesx_werte = []
 achsen = []
-satz = []
+
 
 #CSV-Reader bekommt Datei, mit Anweisung um welche Abstandshalter es sich handelt
 with open('Average_proton_and_electron_fluxes.txt')as werte: # <-- Hier Dateinamen einstellen
@@ -115,10 +146,18 @@ with open('Average_proton_and_electron_fluxes.txt')as werte: # <-- Hier Dateinam
                 plot_daten()
                 achsen.clear()
                 x_werte.clear()
-              
-                satz.append(y_werte[:])
                 y_werte = [],[]
-              
+        
+        if blocknr >= 13:
+            gesdaten_sammeln(daten[blocknr-1])
+            
+            if ende_block(row)==1:
+                
+                plot_gesdaten()
+                gesx_werte = []
+                gesy_werte = []
+                n = 0
+        
             
         if anfang_block(row)==1:
             anfang = counter
@@ -126,9 +165,7 @@ with open('Average_proton_and_electron_fluxes.txt')as werte: # <-- Hier Dateinam
         if ende_block(row)==1:
             print(f'\n* * * * * *  {blocknr}. Block: Von Zeile {anfang} bis {counter}, Länge: {counter-anfang+1} Zeilen * * * * * *\n')
             print (tabulate(ergebnisse))
-            ergebnisse.clear()
-
-            
+            ergebnisse.clear()       
             
         counter += 1
 
