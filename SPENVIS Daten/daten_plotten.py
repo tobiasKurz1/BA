@@ -8,6 +8,11 @@ genutzte Module: tabulate
 
 @author: Tobias Kurz
 """
+
+
+
+
+
 ####### FUnktionen ########
 
 
@@ -168,10 +173,4 @@ with open('Average_proton_and_electron_fluxes.txt')as werte: # <-- Hier Dateinam
             ergebnisse.clear()       
             
         counter += 1
-
-
-
-
-
-
 
