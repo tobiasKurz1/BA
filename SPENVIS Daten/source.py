@@ -10,26 +10,38 @@ Funktionen
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
+import colorsys
 
 ####### Klassen #######
 
 class metadata:
-    def __init__(self, dataStart, length, number):
+    def __init__(self, dataStart, lines, rows,  number):
         self.dataStart = dataStart
-        self.length = length
+        self.lines = lines
+        self.rows = rows
         self.number = number
 
-class dataset:
-    def __init__(self, name=[], xaxis=[], yaxis=[], xlabel=[], ylabel=[], xunit=[], yunit=[]):
+class graph_data:
+    def __init__(self, name=[], species = [], xaxis=[], y1axis=[], y2axis=[], xlabel=[], y1label=[], y2label=[], xunit=[], y1unit=[], y2unit=[]):
         self.name = name
+        self.species = species
         self.xaxis = xaxis
-        self.yaxis = yaxis
+        self.y1axis = y1axis
+        self.y2axis = y2axis
         self.xlabel = xlabel
-        self.ylabel = ylabel
+        self.y1label = y1label
+        self.y2label =y2label
         self.xunit = xunit
-        self.yunit = yunit
+        self.y1unit = y1unit
+        self.y2unit =y2unit
         
-
+class bar_data:
+    def __intit__(self, name=[], labels=[], values=[], unit=[]):
+        self.name = name
+        self.labels = labels
+        self.values = values
+        self.unit = unit
 
 ####### FUnktionen ########
         
@@ -51,56 +63,136 @@ def block_ends(ls):
     
 # Fuellt Metadata-Klasse mit Informationen aus der ersten Zeile  
 def get_meta(row):
-    newMeta = metadata(int(row[1]), int(row[7]), int(row[8])+1)
+    newMeta = metadata(int(row[1]), int(row[7]), int(row[6]), int(row[8])+1)
     return newMeta
     
 # Liest die entsprechenden Daten aus den Bloecken aus und speichert in Klasse Datensatz
 def get_data(meta, block):
-    data = dataset()
+    
+    labels = meta.rows
+    if meta.rows > 3: labels = 3
+    data = graph_data()
     data.xaxis = []
-    data.yaxis = []
+    data.y1axis = []
+    data.y2axis = []
     l = 0
+            
+    data.xlabel = block[(meta.dataStart-labels)][3]
+    data.xunit= block[(meta.dataStart-labels)][1]
+    
+    data.y1label = block[(meta.dataStart-labels+1)][3]
+    data.y1unit= block[(meta.dataStart-labels+1)][1]
+    
+    if meta.rows > 2:
+        data.y2label = block[(meta.dataStart-labels+2)][3]
+        data.y2unit= block[(meta.dataStart-labels+2)][1]
+        
+    if meta.rows > 3:
+        for s in range(int((meta.rows-1)/2)):
+            data.y1axis.append([])
+            data.y2axis.append([])
     
     while l in range(len(block)):
         
-        if ("'PLT_HDR'") in block[l]:    
-            data.name = block[l][2]
-        if ("'Energy'") in block[l]:     
-            data.xlabel = block[l][3]
-            data.xunit = block[l][1]
-        if ("'LET'") in block[l]:     
-            data.ylabel = block[l][3]
-            data.yunit = block[l][1]
+        if ("'PLT_HDR'") in block[l][0]: data.name = block[l][2]
+        if ("'SPECIES'") in block[l][0]: 
+            data.species = block[l]
+            data.species.pop(0)
+            data.species.pop(0)
         
         l += 1
         
         #Separate While Schleife für die daten (zur optimierung)
-        while (l >= meta.dataStart and l < (meta.dataStart + meta.length)):
+        while (l >= meta.dataStart and l < (meta.dataStart + meta.lines)):
+            
             data.xaxis.append(float(block[l][0]))
-            data.yaxis.append(float(block[l][1]))
+            
+            if meta.rows <= 3:    
+                data.y1axis.append(float(block[l][1]))
+            if meta.rows == 3:
+                data.y2axis.append(float(block[l][2]))
+            if meta.rows > 3:
+                for t in range(int((meta.rows-1)/2)):
+                    data.y1axis[t].append(float(block[l][2*t+1]))
+                    data.y2axis[t].append(float(block[l][2*t+2]))
+            
             l +=1
             
     return data
-def cleanup_text(data):
+    
+# Saeubert den Text
+def cleanup_text(meta, data):
     data.name = data.name.replace("'","")
     data.xunit = data.xunit.replace("'","")
-    data.yunit = data.yunit.replace("'","")
+    data.y1unit = data.y1unit.replace("'","")
     data.xlabel = data.xlabel.replace("'","")
-    data.ylabel = data.ylabel.replace("'","")
+    data.y1label = data.y1label.replace("'","")
+    data.y1unit = data.y1unit.replace("!u","^")
+    data.y1unit = data.y1unit.replace("!n","") 
+    data.xunit = data.xunit.replace("!u","^")
+    data.xunit = data.xunit.replace("!n","") 
     
-    data.yunit = data.yunit.replace("!u","^")
-    data.yunit = data.yunit.replace("!n","")    
-    
-    
+    for i in range(len(data.species)):
+        data.species[i] = data.species[i].replace("'","")
+        
+    if meta.rows >= 3:
+        data.y2unit = data.y2unit.replace("'","")
+        data.y2label = data.y2label.replace("'","")
+        data.y2unit = data.y2unit.replace("!u","^")
+        data.y2unit = data.y2unit.replace("!n","") 
 
+def plot_this(meta, data):  
+    
+    if meta.rows == 2: #Einfacher Graph    
+        plt.plot(data.xaxis, data.y1axis, color='b', label = data.name)
+        plt.suptitle(data.name)
+        plt.xlabel(f'{data.xlabel} in {data.xunit}')
+        plt.ylabel(f'{data.y1label} in {data.y1unit}')
 
-def plot_this(data):
-    plt.plot(data.xaxis, data.yaxis, color='b', label = data.name)
-    plt.suptitle(data.name)
-    plt.xlabel(f'{data.xlabel} in {data.xunit}')
-    plt.ylabel(f'{data.ylabel} in {data.yunit}')
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.grid(True)
+        plt.grid(True)
+        plt.xscale('log')
+        plt.yscale('log')
+    
+    if meta.rows == 3: #Graph mit zwei Y-Achsen
+        fig, ax1 = plt.subplots()
+        ax1.set_xlabel(f'{data.xlabel} in {data.xunit}') #Benennung x-Achse
+        ax1.set_ylabel(f'{data.y1label} in {data.y1unit}', color='r')
+        ax1.plot(data.xaxis, data.y1axis, color='r')
+        ax1.tick_params(axis='y', labelcolor='r')
+
+        ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+        ax2.set_ylabel(f'{data.y2label} in {data.y2unit}', color='b')  # we already handled the x-label with ax1
+        ax2.plot(data.xaxis, data.y2axis, color='b')
+        ax2.tick_params(axis='y', labelcolor='b')
+
+        fig.tight_layout()  # otherwise the right y-label is slightly clipped
+
+        plt.grid(True)
+        plt.xscale('log')
+        plt.yscale('log')
+    
+    if meta.rows > 3: #Balkendiagramm
+        
+        r = list(range(len(data.xaxis)))
+        barWidth = 1
+        colorwheel = []
+        
+        for s in range(len(data.species)):
+            colorwheel.append(colorsys.hsv_to_rgb((1.0/len(data.species))*s, 1.0, 1.0))
+
+        i = 0
+        bottombars = [0] * len(data.xaxis)   
+        
+        while i < len(data.species):
+            plt.bar(r, data.y1axis[i], bottom = bottombars, color = colorwheel[i], width = barWidth)
+            bottombars = np.add(bottombars, data.y1axis[i]).tolist()
+            i += 1
+            
+        plt.xticks(r, data.xaxis)
+        plt.xscale('linear')
+        plt.yscale('linear')
+        plt.grid(True)
+        plt.legend()
+    
     
     plt.show()

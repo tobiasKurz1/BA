@@ -20,7 +20,7 @@ import csv
 ###### Dateiname ######
 
 
-file = "spenvis_nlol_srimsi.txt"
+file = "spenvis_nlof_srimsi.txt"
 
 
 #################################################################################
@@ -56,8 +56,8 @@ with open(file)as werte: # <-- Hier Dateinamen einstellen
         if block_ends(row):
             data = get_data(meta, block)
             print(tabulate(block))
-            cleanup_text(data)
-            plot_this(data)
+            cleanup_text(meta, data)
+            plot_this(meta, data)
         
             
        
