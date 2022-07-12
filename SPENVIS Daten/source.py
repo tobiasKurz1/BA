@@ -154,12 +154,14 @@ def plot_this(meta, data):
         plt.yscale('log')
     
     if meta.rows == 3: #Graph mit zwei Y-Achsen
-        fig, ax1 = plt.subplots()
+        fig, ax1 = plt.subplots(figsize = (10,8))
         ax1.set_xlabel(f'{data.xlabel} in {data.xunit}') #Benennung x-Achse
         ax1.set_ylabel(f'{data.y1label} in {data.y1unit}', color='r')
         ax1.plot(data.xaxis, data.y1axis, color='r')
         ax1.tick_params(axis='y', labelcolor='r')
-
+        plt.yscale('log')
+        plt.title(data.name)
+        
         ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
         ax2.set_ylabel(f'{data.y2label} in {data.y2unit}', color='b')  # we already handled the x-label with ax1
         ax2.plot(data.xaxis, data.y2axis, color='b')
@@ -171,28 +173,49 @@ def plot_this(meta, data):
         plt.xscale('log')
         plt.yscale('log')
     
-    if meta.rows > 3: #Balkendiagramm
+    # if meta.rows > 3: #Balkendiagramm
         
-        r = list(range(len(data.xaxis)))
-        barWidth = 1
-        colorwheel = []
+    #     r = list(range(len(data.xaxis)))
+    #     barWidth = 1
+    #     colorwheel = []
         
-        for s in range(len(data.species)):
-            colorwheel.append(colorsys.hsv_to_rgb((1.0/len(data.species))*s, 1.0, 1.0))
+    #     for s in range(len(data.species)):
+    #         colorwheel.append(colorsys.hsv_to_rgb((1.0/len(data.species))*s, 1.0, 1.0))
 
-        i = 0
-        bottombars = [0] * len(data.xaxis)   
+    #     i = 0
+    #     bottombars = [0] * len(data.xaxis)   
         
-        while i < len(data.species):
-            plt.bar(r, data.y1axis[i], bottom = bottombars, color = colorwheel[i], width = barWidth)
-            bottombars = np.add(bottombars, data.y1axis[i]).tolist()
-            i += 1
+    #     while i < len(data.species):
+    #         plt.bar(r, data.y1axis[i], bottom = bottombars, color = colorwheel[i], width = barWidth)
+    #         bottombars = np.add(bottombars, data.y1axis[i]).tolist()
+    #         i += 1
             
-        plt.xticks(r, data.xaxis)
-        plt.xscale('linear')
-        plt.yscale('linear')
-        plt.grid(True)
-        plt.legend()
+    #     plt.xticks(r, data.xaxis)
+    #     plt.xscale('linear')
+    #     plt.yscale('linear')
+    #     plt.grid(True)
+    #     plt.legend()
     
+    if meta.rows > 3: #Schichtdiagramm
+        
+        plt.figure(figsize = (10,8))
+        
+        plt.subplot(211)
+        plt.stackplot(data.xaxis, data.y1axis, labels = data.species, alpha = 0.8)
+        plt.yscale('log')
+        plt.xscale('log')
+        plt.grid(True)
+        plt.ylabel(f'{data.y1label} in {data.y1unit}')
+        plt.title(data.name)
+        
+        plt.subplot(212)
+        plt.stackplot(data.xaxis, data.y2axis, labels = data.species, alpha = 0.8)
+        plt.sharex = True
+        plt.yscale('log')
+        plt.xscale('log')
+        plt.grid(True)
+        plt.xlabel(f'{data.xlabel} in {data.xunit}')
+        plt.ylabel(f'{data.y2label} in {data.y2unit}')
+        
     
     plt.show()

@@ -29,9 +29,6 @@ file = "spenvis_nlof_srimsi.txt"
 ####
 #################################################################################
 
-
-
-
 line = 0
 
 #CSV-Reader bekommt Datei, mit Anweisung um welche Abstandshalter es sich handelt
@@ -58,7 +55,3 @@ with open(file)as werte: # <-- Hier Dateinamen einstellen
             print(tabulate(block))
             cleanup_text(meta, data)
             plot_this(meta, data)
-        
-            
-       
-
