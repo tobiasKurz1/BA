@@ -197,25 +197,35 @@ def plot_this(meta, data):
     #     plt.legend()
     
     if meta.rows > 3: #Schichtdiagramm
-        
+        colorwheel = []
+        for s in range(len(data.species)):
+            colorwheel.append(colorsys.hsv_to_rgb((1.0/len(data.species))*s, 1.0, 1.0))
+            colorwheel[s] = [round(x*255) for x in colorwheel[s]]
+            colorwheel[s] = '#%02x%02x%02x' % (colorwheel[s][0], colorwheel[s][1], colorwheel[s][2])
+    
         plt.figure(figsize = (10,8))
         
+       # data.y1axis.reverse()
+        #data.y2axis.reverse()
+       # data.species.reverse()
+        
         plt.subplot(211)
-        plt.stackplot(data.xaxis, data.y1axis, labels = data.species, alpha = 0.8)
-        plt.yscale('log')
+        plt.stackplot(data.xaxis, data.y1axis, labels = data.species,colors = colorwheel, alpha = 0.8)
+        plt.yscale('linear')
         plt.xscale('log')
         plt.grid(True)
         plt.ylabel(f'{data.y1label} in {data.y1unit}')
         plt.title(data.name)
+       
         
         plt.subplot(212)
-        plt.stackplot(data.xaxis, data.y2axis, labels = data.species, alpha = 0.8)
+        plt.stackplot(data.xaxis, data.y2axis, labels = data.species,colors = colorwheel, alpha = 0.8)
         plt.sharex = True
-        plt.yscale('log')
+        plt.yscale('linear')
         plt.xscale('log')
         plt.grid(True)
         plt.xlabel(f'{data.xlabel} in {data.xunit}')
         plt.ylabel(f'{data.y2label} in {data.y2unit}')
-        
+        plt.legend(loc=4)
     
     plt.show()

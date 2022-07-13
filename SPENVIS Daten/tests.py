@@ -4,6 +4,8 @@ Created on Sat Jun 25 14:56:08 2022
 
 @author: Tobias Kurz
 """
+import numpy as np
+import colorsys
 
 liste1 = []
 liste2 = []
@@ -12,11 +14,21 @@ l = 0
 Daten1 = [1, 2, 3, 4, 5],[6, 7, 8, 9, 10],[11, 12, 13, 14, 15],['a',2,3,4,5]
 
 
+colorwheel = []
+for s in range(len(Daten1)):
+    colorwheel.append(colorsys.hsv_to_rgb((1.0/len(Daten1))*s, 1.0, 1.0))
+    colorwheel[s] = [round(x) for x in colorwheel[s]]
+    colorwheel[s] = '#%02x%02x%02x' % (colorwheel[s][0], colorwheel[s][1], colorwheel[s][2])
+
+
+
+
+
 #Daten1 = [s.strip("'") for s in Daten1]
 
-#for s in range(len(Daten1)): Daten1[s] = Daten1[s].replace("'","")
-test = map(lambda each:each.strip("'"), Daten1) 
-print (test)
+# #for s in range(len(Daten1)): Daten1[s] = Daten1[s].replace("'","")
+# test = map(lambda each:each.strip("'"), Daten1) 
+# print (test)
 
 
 # while l <= range(len(Daten1))[-1]:
