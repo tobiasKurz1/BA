@@ -49,5 +49,6 @@ with open(file)as werte: # <-- Hier Dateinamen einstellen
         
         if block_ends(row):
             data = get_data(meta, block)
+            #print(tabulate(block))
             cleanup_text(meta, data)
             plot_this(meta, data)

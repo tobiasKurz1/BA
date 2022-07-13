@@ -149,12 +149,13 @@ def plot_this(meta, data):
     print(f'plotting {data.name} from segment {data.segment}...')
     
     if meta.rows == 2: #Einfacher Graph    
+        plt.figure(figsize=(10,8))
         plt.plot(data.xaxis, data.y1axis, color='b', label = data.name)
-        plt.suptitle(f'{data.name} (Segment: {data.segment})')
+        plt.suptitle(f'{data.name} (Segment: {data.segment})',weight='bold')
         plt.xlabel(f'{data.xlabel} in {data.xunit}')
         plt.ylabel(f'{data.y1label} in {data.y1unit}')
-
         plt.grid(True)
+
         plt.xscale('log')
         plt.yscale('log')
     
@@ -165,7 +166,7 @@ def plot_this(meta, data):
         ax1.plot(data.xaxis, data.y1axis, color='r')
         ax1.tick_params(axis='y', labelcolor='r')
         plt.yscale('log')
-        plt.title(f'{data.name} (Segment: {data.segment})')
+        plt.title(f'{data.name} (Segment: {data.segment})',weight='bold')
         
         ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
         ax2.set_ylabel(f'{data.y2label} in {data.y2unit}', color='b')  # we already handled the x-label with ax1
@@ -204,34 +205,36 @@ def plot_this(meta, data):
     if meta.rows > 3: #Schichtdiagramm
         colorwheel = []
         for s in range(len(data.species)):
-            colorwheel.append(colorsys.hsv_to_rgb((1.0/len(data.species))*s, 1.0, 1.0))
+            colorwheel.append(colorsys.hsv_to_rgb((1.0/len(data.species))*(s*0.8), 1.0, 1.0))
             colorwheel[s] = [round(x*255) for x in colorwheel[s]]
             colorwheel[s] = '#%02x%02x%02x' % (colorwheel[s][0], colorwheel[s][1], colorwheel[s][2])
     
         plt.figure(figsize = (10,8))
         
-       # data.y1axis.reverse()
-       # data.y2axis.reverse()
-       # data.species.reverse()
+        data.y1axis.reverse()
+        data.y2axis.reverse()
+        data.species.reverse()
         
         plt.subplot(211)
         plt.stackplot(data.xaxis, data.y1axis, labels = data.species,colors = colorwheel, alpha = 0.8)
-        plt.yscale('linear')
+        plt.yscale('log')
         plt.xscale('log')
         plt.grid(True)
-        plt.ylabel(f'{data.y1label} in {data.y1unit}')
-        plt.title(f'{data.name} (Segment: {data.segment})')
+        plt.ylabel(f'{data.y1label} in \n{data.y1unit}')
+        plt.title(f'{data.name} (Segment: {data.segment})',weight='bold')
        
         
         plt.subplot(212)
         plt.stackplot(data.xaxis, data.y2axis, labels = data.species,colors = colorwheel, alpha = 0.8)
         plt.sharex = True
-        plt.yscale('linear')
+        plt.yscale('log')
         plt.xscale('log')
         plt.grid(True)
         plt.xlabel(f'{data.xlabel} in {data.xunit}')
-        plt.ylabel(f'{data.y2label} in {data.y2unit}')
-       # plt.legend(loc=4)
+        plt.ylabel(f'{data.y2label} in \n{data.y2unit}')
+        
+        plt.legend(loc='lower center', bbox_to_anchor=(0.5,-1.1), ncol=10)
+        
     
     plt.show()
     print(" Done!")
