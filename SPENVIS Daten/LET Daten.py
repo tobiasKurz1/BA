@@ -39,19 +39,15 @@ with open(file)as werte: # <-- Hier Dateinamen einstellen
     for row in csv_reader_object:
        
         line += 1
-
         
         if block_starts(row):
-            print("Block starts")
             meta = get_meta(row)
             block = []
             data = []
-            print(meta.number)
             
         block.append(row)
         
         if block_ends(row):
             data = get_data(meta, block)
-            print(tabulate(block))
             cleanup_text(meta, data)
             plot_this(meta, data)

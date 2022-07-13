@@ -23,8 +23,9 @@ class metadata:
         self.number = number
 
 class graph_data:
-    def __init__(self, name=[], species = [], xaxis=[], y1axis=[], y2axis=[], xlabel=[], y1label=[], y2label=[], xunit=[], y1unit=[], y2unit=[]):
+    def __init__(self, name=[], segment='Total Mission', species = [], xaxis=[], y1axis=[], y2axis=[], xlabel=[], y1label=[], y2label=[], xunit=[], y1unit=[], y2unit=[]):
         self.name = name
+        self.segment = segment
         self.species = species
         self.xaxis = xaxis
         self.y1axis = y1axis
@@ -95,6 +96,7 @@ def get_data(meta, block):
     while l in range(len(block)):
         
         if ("'PLT_HDR'") in block[l][0]: data.name = block[l][2]
+        if ("'ORB_HDR'") in block[l][0]: data.segment = block[l][2]
         if ("'SPECIES'") in block[l][0]: 
             data.species = block[l]
             data.species.pop(0)
@@ -123,6 +125,7 @@ def get_data(meta, block):
 # Saeubert den Text
 def cleanup_text(meta, data):
     data.name = data.name.replace("'","")
+    data.segment = data.segment.replace("'","")
     data.xunit = data.xunit.replace("'","")
     data.y1unit = data.y1unit.replace("'","")
     data.xlabel = data.xlabel.replace("'","")
@@ -143,9 +146,11 @@ def cleanup_text(meta, data):
 
 def plot_this(meta, data):  
     
+    print(f'plotting {data.name} from segment {data.segment}...')
+    
     if meta.rows == 2: #Einfacher Graph    
         plt.plot(data.xaxis, data.y1axis, color='b', label = data.name)
-        plt.suptitle(data.name)
+        plt.suptitle(f'{data.name} (Segment: {data.segment})')
         plt.xlabel(f'{data.xlabel} in {data.xunit}')
         plt.ylabel(f'{data.y1label} in {data.y1unit}')
 
@@ -160,7 +165,7 @@ def plot_this(meta, data):
         ax1.plot(data.xaxis, data.y1axis, color='r')
         ax1.tick_params(axis='y', labelcolor='r')
         plt.yscale('log')
-        plt.title(data.name)
+        plt.title(f'{data.name} (Segment: {data.segment})')
         
         ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
         ax2.set_ylabel(f'{data.y2label} in {data.y2unit}', color='b')  # we already handled the x-label with ax1
@@ -206,7 +211,7 @@ def plot_this(meta, data):
         plt.figure(figsize = (10,8))
         
        # data.y1axis.reverse()
-        #data.y2axis.reverse()
+       # data.y2axis.reverse()
        # data.species.reverse()
         
         plt.subplot(211)
@@ -215,7 +220,7 @@ def plot_this(meta, data):
         plt.xscale('log')
         plt.grid(True)
         plt.ylabel(f'{data.y1label} in {data.y1unit}')
-        plt.title(data.name)
+        plt.title(f'{data.name} (Segment: {data.segment})')
        
         
         plt.subplot(212)
@@ -226,6 +231,7 @@ def plot_this(meta, data):
         plt.grid(True)
         plt.xlabel(f'{data.xlabel} in {data.xunit}')
         plt.ylabel(f'{data.y2label} in {data.y2unit}')
-        plt.legend(loc=4)
+       # plt.legend(loc=4)
     
     plt.show()
+    print(" Done!")
