@@ -10,7 +10,7 @@ Funktionen
 """
 
 import matplotlib.pyplot as plt
-import numpy as np
+#import numpy as np
 import colorsys
 
 ####### Klassen #######
@@ -36,13 +36,6 @@ class graph_data:
         self.xunit = xunit
         self.y1unit = y1unit
         self.y2unit =y2unit
-        
-class bar_data:
-    def __intit__(self, name=[], labels=[], values=[], unit=[]):
-        self.name = name
-        self.labels = labels
-        self.values = values
-        self.unit = unit
 
 ####### FUnktionen ########
         
@@ -223,7 +216,6 @@ def plot_this(meta, data):
         plt.ylabel(f'{data.y1label} in \n{data.y1unit}')
         plt.title(f'{data.name} (Segment: {data.segment})',weight='bold')
        
-        
         plt.subplot(212)
         plt.stackplot(data.xaxis, data.y2axis, labels = data.species,colors = colorwheel, alpha = 0.8)
         plt.sharex = True
@@ -234,7 +226,7 @@ def plot_this(meta, data):
         plt.ylabel(f'{data.y2label} in \n{data.y2unit}')
         
         plt.legend(loc='lower center', bbox_to_anchor=(0.5,-1.1), ncol=10)
-        
+    
     
     plt.show()
     print(" Done!")

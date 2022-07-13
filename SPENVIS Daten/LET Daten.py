@@ -12,7 +12,7 @@ genutzte Module: tabulate
 
 from source import block_starts, block_ends, get_meta, get_data, plot_this, cleanup_text #import Functions
 
-from tabulate import tabulate
+#from tabulate import tabulate
 import csv
 
 
