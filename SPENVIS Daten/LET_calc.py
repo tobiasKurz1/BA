@@ -18,17 +18,17 @@ Created on Wed Jul 13 11:14:33 2022
 """
 from numpy import pi
 from scipy.integrate import quad
-from source import block_starts, block_ends, get_meta, get_data, plot_this, cleanup_text #import Functions
+from source import import_data, plot_this #import Functions
 
 #########################################################################
 #############   Parameters:   ###########################################
 #########################################################################
-
+"""
 sens_vol = (38.7, 38.7, 2.0) # sensitive Volume (length, width, thickness)[μm]
 
 Q_c = 1.13*(10**-2) # critical Charge [pC] **ANNAHME**
 
-L = data.y1achse[Energy] # ??? LET [MeV*cm^2*g^-1]  **Abhängig von Energie**
+L = data.y1achse[Energy] # ??? LET [MeV*cm^2*g^-1]  **Abhängig von Integral Flux**
 
 p_max = 0 #??? largest diameter if the sensitive volume [g/cm^2]
 
@@ -62,3 +62,7 @@ U = pi * A * (X/e) * Q_c * U_integral_value
 # Direct ionisation upset rates
 
 # Proton induces upset rates
+"""
+
+(database, metabase)=import_data('spenvis_nlof_srimsi.txt',',')
+#plot_this(metabase[0], database[0])

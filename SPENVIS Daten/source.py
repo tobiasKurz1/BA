@@ -6,14 +6,14 @@ Created on Thu Jun 30 13:49:03 2022
 
 Funktionen
 
-
 """
 
 import matplotlib.pyplot as plt
 #import numpy as np
 import colorsys
+import csv
 
-####### Klassen #######
+#%% Classes
 
 class metadata:
     def __init__(self, dataStart, lines, rows,  number):
@@ -22,7 +22,7 @@ class metadata:
         self.rows = rows
         self.number = number
 
-class graph_data:
+class dataset:
     def __init__(self, name=[], segment='Total Mission', species = [], xaxis=[], y1axis=[], y2axis=[], xlabel=[], y1label=[], y2label=[], xunit=[], y1unit=[], y2unit=[]):
         self.name = name
         self.segment = segment
@@ -37,7 +37,7 @@ class graph_data:
         self.y1unit = y1unit
         self.y2unit =y2unit
 
-####### FUnktionen ########
+#%% Functions
         
 # Gibt eine 1 zurück, wenn der Anfang eines Blocks gefunden wurde
 def block_starts(ls):
@@ -57,7 +57,7 @@ def block_ends(ls):
     
 # Fuellt Metadata-Klasse mit Informationen aus der ersten Zeile  
 def get_meta(row):
-    newMeta = metadata(int(row[1]), int(row[7]), int(row[6]), int(row[8])+1)
+    newMeta = metadata(int(row[1]), int(row[7]), int(row[6]), int(row[8]))
     return newMeta
     
 # Liest die entsprechenden Daten aus den Bloecken aus und speichert in Klasse Datensatz
@@ -65,7 +65,7 @@ def get_data(meta, block):
     
     labels = meta.rows
     if meta.rows > 3: labels = 3
-    data = graph_data()
+    data = dataset()
     data.xaxis = []
     data.y1axis = []
     data.y2axis = []
@@ -114,7 +114,7 @@ def get_data(meta, block):
             l +=1
             
     return data
-    
+
 # Saeubert den Text
 def cleanup_text(meta, data):
     data.name = data.name.replace("'","")
@@ -137,6 +137,39 @@ def cleanup_text(meta, data):
         data.y2unit = data.y2unit.replace("!u","^")
         data.y2unit = data.y2unit.replace("!n","") 
 
+def import_data(file, delimiter):
+    line = 0                             # line starter
+    database = []
+    metabase = []
+    
+    with open(file)as werte:
+        csv_reader_object = csv.reader(werte, delimiter=delimiter)
+          
+        for row in csv_reader_object:
+           
+            line += 1
+            
+            if block_starts(row): # get metadata about new block
+                meta = get_meta(row)
+                metabase.append(meta)
+                block = []
+                data = []
+                
+            block.append(row) # fill assigned tuple with data
+            
+            if block_ends(row): #sort and interpret saved data, clean text, plot graphs
+                data = get_data(meta, block)
+                cleanup_text(meta, data)
+                database.append(data)
+                
+    metabase.reverse() #allign metabase with plot counting
+    database.reverse() #allign database with plot counting
+    
+    return database, metabase
+
+
+#%% Plots
+
 def plot_this(meta, data):  
     
     print(f'plotting {data.name} from segment {data.segment}...')
@@ -144,7 +177,7 @@ def plot_this(meta, data):
     if meta.rows == 2: #Einfacher Graph    
         plt.figure(figsize=(10,8))
         plt.plot(data.xaxis, data.y1axis, color='b', label = data.name)
-        plt.suptitle(f'{data.name} (Segment: {data.segment})',weight='bold')
+        plt.suptitle(f'DB:{meta.number} - {data.name} (Segment: {data.segment})',weight='bold')
         plt.xlabel(f'{data.xlabel} in {data.xunit}')
         plt.ylabel(f'{data.y1label} in {data.y1unit}')
         plt.grid(True)
@@ -159,7 +192,7 @@ def plot_this(meta, data):
         ax1.plot(data.xaxis, data.y1axis, color='r')
         ax1.tick_params(axis='y', labelcolor='r')
         plt.yscale('log')
-        plt.title(f'{data.name} (Segment: {data.segment})',weight='bold')
+        plt.title(f'DB:{meta.number} - {data.name} (Segment: {data.segment})',weight='bold')
         
         ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
         ax2.set_ylabel(f'{data.y2label} in {data.y2unit}', color='b')  # we already handled the x-label with ax1
@@ -214,7 +247,7 @@ def plot_this(meta, data):
         plt.xscale('log')
         plt.grid(True)
         plt.ylabel(f'{data.y1label} in \n{data.y1unit}')
-        plt.title(f'{data.name} (Segment: {data.segment})',weight='bold')
+        plt.title(f'DB:{meta.number} - {data.name} (Segment: {data.segment})',weight='bold')
        
         plt.subplot(212)
         plt.stackplot(data.xaxis, data.y2axis, labels = data.species,colors = colorwheel, alpha = 0.8)
