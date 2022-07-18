@@ -137,6 +137,7 @@ def cleanup_text(meta, data):
         data.y2unit = data.y2unit.replace("!u","^")
         data.y2unit = data.y2unit.replace("!n","") 
 
+# importiert Daten unter Nutzung der anderen Funktionen (Ersatz für "LET Daten.py")
 def import_data(file, delimiter):
     line = 0                             # line starter
     database = []
