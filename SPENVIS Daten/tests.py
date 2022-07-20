@@ -7,70 +7,67 @@ Created on Sat Jun 25 14:56:08 2022
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import pi, sqrt, arctan, arccos
-from scipy.integrate import quad
-from source import import_data, plot_this #import Functions
+from tabulate import tabulate
+
 
 sens_vol = (1, 0.5, 0.1)
 (w,l,h) = sens_vol
 
-
-
-
-def ksq(x,y): 
-    ksq = x**2+y**2
-    return ksq
-def tsq(x,z): 
-    tsq = x**2+z**2
-    return tsq
-def t(x,z): 
-    t=sqrt(tsq(x,z)) 
-    return t
-def rsq(x,y,z): 
-    rsq = (ksq(x,y)+z*z)
-    return rsq
-def r(x,y,z): 
-    r = sqrt(rsq(x,y,z))
-    return r
-def v(x,y,z): 
-    v = (12*x*y*(z**2))
-    return v
-def psq(s,z): 
-    psq = s**2-z**2
-    return psq
-def qsq(s,x,z):
-    qsq = (s**2 - x**2 -z**2)
-    return qsq
-
+lim = 1.2
 steps = 100
 lsgx = []
 lsgy = []
 
+
+
+
+
 def G(s,x,y,z):
-    G = 0
+    G1 = 0
+    G2 = 0
+    G3 = 0
+    ksq = x**2.+y**2.
+    tsq = x**2.+z**2.
+    t=sqrt(tsq) 
+    rsq = ksq+z*z
+    r = sqrt(rsq)
+    v = 12.*x*y*z**2
+    psq = s**2.-z**2.
+    qsq = s**2.-x**2-z**2
     
-    if (s>=0 and s<z): #EQ A-9
-        G=8*(y**2)*z/ksq(x,y)-s*(3*x*y/(r(x,y,z)*t(x,z)))**2
-    if (s>=z and s<t(x,z)): #EQ A-10
-        G=s*(3*y/sqrt(ksq(x,y)))**2-s*(3*x*y/(t(x,z)*r(x,y,z)))**2
-        -x*(sqrt(psq(s,z))/s)*(8+(4*z**2)/(s**2))
-        +(v(y,x,z)*np.arctan(y/x)-((y*z**2)/sqrt(ksq(x,y)))**2)/(s**3)
-    if (s>=t(x,z) and s<=r(x,y,z)): #EQ A-11
-        G=(-s)*(s*x*z/(r(x,y,z)*sqrt(ksq(x,y))))**2
-        +(x**2*z**2*(z**2/ksq(x,y)-3)+v(x,y,z)*np.arctan(y/x))/(s**3)   
-        +y*z**2*(sqrt(qsq(s,x,z))/s)*(8/tsq(x,z)+4/(s**2))
-        -(v(x,y,z)/(s**3))*np.arccos(x/sqrt(psq(s,z)))
+    if ((s>=0) and (s<z)): #EQ A-9
+        G1=8*(y**2)*z/ksq-s*(3*x*y/(r*t))**2
+        print(1)
+    if ((s>=z) and (s<t)): #EQ A-10
+        G2=s*(3*y/sqrt(ksq))**2-s*(3*x*y/(t*r))**2
+        -x*(sqrt(psq)/s)*(8+4*z**2/(s**2))
+        +(v*arctan(y/x)-(y*z**2/sqrt(ksq))**2)/(s**3)
+        print(2)
+    if ((s>=t) and (s<=r)): #EQ A-11
+        G3=(-s)*(3*x*z/(r*sqrt(ksq)))**2
+        +((x**2)*(z**2)*(z**2/ksq-3)+v*arctan(y/x))/(s**3)   
+        +y*z**2*(sqrt(qsq)/s)*(8/tsq+4/(s**2))
+        -(v/(s**3))*arccos(x/sqrt(psq))
+        print(3)
+    
+    G = (G1+G2+G3)/(pi*3*(x*y+y*z+x*z))
+    #print(f'S={round(s,3)}, G1={round(G1,3)}, G2={round(G2,3)}, G3={round(G3,3)}')
+    print(f'G_test={G}')
     return G
         
 
 
-for s in np.linspace(0, 1.2, steps, True):
+for s in np.linspace(0, lim, steps, True):
    
-    difpld = (G(s,l,w,h)+G(s,w,l,h)+G(s,l,h,w)+G(s,w,h,l)+G(s,h,w,l)+G(s,h,l,w))/(pi*3*(h*w+h*l+l*w))
-    lsgy.append(difpld*10)
+    lsgy.append((G(s,l,w,h)+G(s,w,l,h)+G(s,l,h,w)+G(s,w,h,l)+G(s,h,w,l)+G(s,h,l,w)))
     lsgx.append(s)
 
+lsgy_ex=lsgy[:]
 plt.figure(figsize=(10,8))
 plt.plot(lsgx,lsgy)
+lsgy_ex = [i*10 for i in lsgy_ex]
+plt.plot(lsgx,lsgy_ex, '--')
+plt.ylim(0,25)
 plt.grid(True)
 plt.show()
 

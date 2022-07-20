@@ -16,11 +16,12 @@ Created on Wed Jul 13 11:14:33 2022
     
 
 """
+from tabulate import tabulate
 import matplotlib.pyplot as plt
-import numpy as np
-from numpy import pi, sqrt, arctan, arccos
+
 from scipy.integrate import quad
 from source import import_data, plot_this #import Functions
+from calc import difpld
 
 (database, metabase)=import_data('spenvis_nlof_srimsi.txt',',')
 
@@ -77,6 +78,28 @@ sens_vol = (1, 0.5, 0.1)
 #sens_vol = (38.7, 38.7, 2.0) # dimensions of Sensitive Volume (length, width, thickness)[μm]
 #sens_vol = [s * (10**-6) for s in sens_vol] # convert to [m]
 (w,l,h) = sens_vol
+steps = 10000
+lbound = 0
+rbound = 1.2
+X1 =[]
+Y1 = []
+Y2 = []
+
+
+
+(X1, Y1, Y2) = difpld(lbound, rbound, steps, w, l, h)
+
+
+plt.figure(figsize=(10,8))
+plt.plot(X1,Y1)
+plt.plot(X1,Y2)
+
+#plt.plot(lsgx,lsgy_ex, '--')
+plt.ylim(0,20)
+plt.grid(True)
+
+plt.show()
+
 """
 L_min = 100 #??? ANNAHME required minimum LET for an upset with p_max [MeV*cm^2*g^-1]
 L_max = 1.05*(10**5) # highest LET any stopping ion can deliver [MeV*cm^2*g^-1]
@@ -93,49 +116,12 @@ e = 1.602*(10**-7) #elementary charge [pC]
 # Q_c = (e*L_min*p_max)/X #minimum charge for Upset [pC]
 """
 #%% Differential Path length distribution
-steps = 1000
-lsgx =[]
-lsgy = []
 
-def F(s,x,y,z):
 
-    r = sqrt(x**2+y**2+z**2) #??? = p_max,  ggf umbennennen
-    
-    k = sqrt(x**2+y**2)
-    T = sqrt(x**2+z**2)
-    V = 12*x*y*z**2
-    B1 = -(3*x*y/(r*T))**2
-    B2 = (3*y/k)**2+B1
-    B3 = -(3*x*z/(k*r))**2
-    B4 = V*np.arctan(y/x)-(y*z**2/k)**2
-    B5 = x**2*z**2*(z**2/k**2-3)+V*np.arctan(y/x)
-  #  B6 = 3*y**2*z**2/k**2+6*x*y*np.arctan(y/x)
-    norm = 3*pi*(x*y+x*z+y*z)
 
-    p = sqrt(s**2-z**2) if (s>z) else 0
-    Q = sqrt((s**2)-(x**2)-(z**2)) if ((s**2)>(x**2+z**2)) else 0
-    N1 = B1*s+4*z if ((s>=0)and(s<z)) else 0
-    N2 = B2*s+B4/s**3-x*(p/s)*(8+4*z**2/s**2) if ((s>=z) and (s<T)) else 0
-    N3 = B3*s+B5/s**3+y*(Q/s)*(4+2*T**2/s**2)-(V/s**3)*np.arccos(x/p) if ((s>=T) and (s<=r)) else 0
-    F = ((N1+N2+N3)/norm)
-    return F
-
-for s in np.linspace(0, 1.2, steps, True):
-    lsgy.append(F(s,l,w,h)+F(s,w,l,h)+F(s,l,h,w)+F(s,w,h,l)+F(s,h,w,l)+F(s,h,l,w))
-    lsgx.append(s)
     
     
     
-    
-lsgy_ex=lsgy[:]
-plt.figure(figsize=(10,8))
-plt.plot(lsgx,lsgy)
-lsgy_ex = [i*10 for i in lsgy_ex]
-plt.plot(lsgx,lsgy_ex, '--')
-plt.ylim(0,25)
-plt.grid(True)
-
-plt.show()
 
 ## Rechnung:
 
