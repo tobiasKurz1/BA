@@ -18,40 +18,67 @@ Created on Wed Jul 13 11:14:33 2022
 """
 from tabulate import tabulate
 import matplotlib.pyplot as plt
+import numpy as np
+from numpy import pi, sqrt, arctan, arccos
 
 from scipy.integrate import quad
 from source import import_data, plot_this #import Functions
 from calc import difpld
 
-(database, metabase)=import_data('spenvis_nlof_srimsi.txt',',')
 
 #########################################################################
-#############   Parameters:   ###########################################
+#############   Constants   #############################################
 #########################################################################
 
+#%% INPUTS:
+    
+(w,l,h) = (20, 10, 5) #[μm] dimensions of Sensitive Volume (length, width, thickness)
+L_min = 100 #???[MeV*cm^2*g^-1] ANNAHME required minimum LET for an upset with p_max 
+e = 1.602*(10**-7) #[pC] elementary charge 
+X = 3.6 #[eV] Energy needed to create ine electron-hole pair (3.6 eV in SI; 4.8 eV in GaAs) 
+
+# LET-Data
+
+(metabase, database)=import_data('spenvis_nlof_srimsi.txt',',') # SPENVIS Data
+plot_this(metabase[0],database[0])
+plot_this(metabase[1],database[1])
+plot_this(metabase[2],database[2])
+
+#%% CONVERSIONS:
+
+X = X*(10**-6) # convert to [MeV]
+(wm, lm, hm) = (w *10**-6, l*10**-6, h*10**-6) # convert to [m]
+
+
+#%% PARAMETERS:
+L_max = 1.05*(10**5) # highest LET any stopping ion can deliver [MeV*cm^2*g^-1]
+p_max = sqrt(wm**2+lm**2+hm**2) #largest diameter if the sensitive volume [g/cm^2]
+Q_c = (e*L_min*p_max)/X #minimum charge for Upset [pC]
+S_min = Q_c/0.28
+A_p = 0.5*(wm*hm+wm*lm+hm*lm) #Average projected Area of sensitive Volume [m^2]
+A = A_p * 4 #[m^2] surface area of sensitive volume
+
+#%%  Differential Path length distribution
+
+
+steps = 1000
+lbound = 0
+rbound = 25
+X1 =[]
+Y1 = []
+
+
+(difmeta, difdata) = difpld(lbound, rbound, steps, w, l, h)
+
+plot_this(difmeta, difdata)
 
 
 
 
 """
-# Pickel, Blandford - Rechnung:
-    
-L_min = 100 #??? ANNAHME required minimum LET for an upset with p_max [MeV*cm^2*g^-1]
-    
-e = 1.602*(10**-7) #elementary charge [pC]
-X = 3.6 # Energy needed to create ine electron-hole pair (3.6 eV in SI; 4.8 eV in GaAs) [eV]
-X = X*(10**-6) # convert to [MeV]
 
-sens_vol = (38.7, 38.7, 2.0) # dimensions of Sensitive Volume (length, width, thickness)[μm]
-sens_vol = [s * (10**-6) for s in sens_vol] # convert to [m]
 
-S_max = sqrt(sens_vol[0]**2+sens_vol[1]**2+sens_vol[2]**2) #largest diameter if the sensitive volume [g/cm^2]
 
-Q_c = (e*L_min*S_max)/X #minimum charge for Upset [pC]
-
-S_min = Q_c/0.28
-
-A_p = 0.5*(sens_vol[0]*sens_vol[1]+sens_vol[0]*sens_vol[2]+sens_vol[2]*sens_vol[1]) #Average projected Area of sensitive Volume [m^2]
 
 E_R = 0 # Error Rate for sensitive Volume (events/day)
 
@@ -60,73 +87,15 @@ def E_R_integral(S):
 
 E_R_integral_value = quad(E_R_integral, S_min, S_max)
 
-E_R = A_p * 
+#E_R = A_p * 
 
-"""
-
-
-
-
-
-
-
-
-
-#SPENVIS - Rechnung:
-
-sens_vol = (1, 0.5, 0.1)
-#sens_vol = (38.7, 38.7, 2.0) # dimensions of Sensitive Volume (length, width, thickness)[μm]
-#sens_vol = [s * (10**-6) for s in sens_vol] # convert to [m]
-(w,l,h) = sens_vol
-steps = 10000
-lbound = 0
-rbound = 1.2
-X1 =[]
-Y1 = []
-Y2 = []
-
-
-
-(X1, Y1, Y2) = difpld(lbound, rbound, steps, w, l, h)
-
-
-plt.figure(figsize=(10,8))
-plt.plot(X1,Y1)
-plt.plot(X1,Y2)
-
-#plt.plot(lsgx,lsgy_ex, '--')
-plt.ylim(0,20)
-plt.grid(True)
-
-plt.show()
-
-"""
-L_min = 100 #??? ANNAHME required minimum LET for an upset with p_max [MeV*cm^2*g^-1]
-L_max = 1.05*(10**5) # highest LET any stopping ion can deliver [MeV*cm^2*g^-1]
-
-p_max = sqrt(x**2+y**2+z**2) #largest diameter if the sensitive volume [g/cm^2]
-
-
-X = 3.6 # Energy needed to create ine electron-hole pair (3.6 eV in SI; 4.8 eV in GaAs) [eV]
-X = X*(10**-6) # convert to [MeV]
-A = 2 * (x*y+x*z+y*z) #surface area of sensitive volume [m^2]
-e = 1.602*(10**-7) #elementary charge [pC]
-
-
-# Q_c = (e*L_min*p_max)/X #minimum charge for Upset [pC]
-"""
-#%% Differential Path length distribution
-
-
-
-    
     
     
 
 ## Rechnung:
 
 
-                                                                       
+       """                                                                
 
 
 

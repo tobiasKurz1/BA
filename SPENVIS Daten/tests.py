@@ -8,7 +8,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy import pi, sqrt, arctan, arccos
 from tabulate import tabulate
-
+import numpy as np
+from numpy import pi, sqrt, arctan, arccos
+import random as random
 
 sens_vol = (1, 0.5, 0.1)
 (w,l,h) = sens_vol
@@ -52,7 +54,7 @@ def G(s,x,y,z):
     
     G = (G1+G2+G3)/(pi*3*(x*y+y*z+x*z))
     #print(f'S={round(s,3)}, G1={round(G1,3)}, G2={round(G2,3)}, G3={round(G3,3)}')
-    print(f'G_test={G}')
+
     return G
         
 
@@ -67,21 +69,21 @@ plt.figure(figsize=(10,8))
 plt.plot(lsgx,lsgy)
 lsgy_ex = [i*10 for i in lsgy_ex]
 plt.plot(lsgx,lsgy_ex, '--')
-plt.ylim(0,25)
+plt.ylim(0,20)
 plt.grid(True)
 plt.show()
 
 
-
-
-
-
-
-
-
-
 """
-number = 600
+
+
+
+
+
+
+
+
+number = 20000
 
 
 for i in range(number):
@@ -90,10 +92,10 @@ for i in range(number):
     
     x_values = [pointA[0], pointB[0]]
     y_values = [pointA[1], pointB[1]]
-    
+    print(f'{round(i/number,2)} geladen')
     plt.xlim([0,100])
     plt.ylim([0,100])
-    plt.plot(x_values,y_values, color='black', alpha = 0.3)
+    plt.plot(x_values,y_values, alpha = 1)
 
 
 
@@ -101,7 +103,7 @@ for i in range(number):
 
 
 
-""
+
 
 
 

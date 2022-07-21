@@ -16,7 +16,7 @@ import csv
 #%% Classes
 
 class metadata:
-    def __init__(self, dataStart, lines, rows,  number):
+    def __init__(self, dataStart = [], lines = [], rows = [],  number = []):
         self.dataStart = dataStart
         self.lines = lines
         self.rows = rows
@@ -166,7 +166,7 @@ def import_data(file, delimiter):
     metabase.reverse() #allign metabase with plot counting
     database.reverse() #allign database with plot counting
     
-    return database, metabase
+    return metabase, database
 
 
 #%% Plots
@@ -174,6 +174,21 @@ def import_data(file, delimiter):
 def plot_this(meta, data):  
     
     print(f'plotting {data.name} from segment {data.segment}...')
+    
+    
+    if meta.rows ==-1: #special Case Diff. Path length
+        plt.figure(figsize=(10,8))
+        plt.plot(data.xaxis, data.y1axis, color='b', label = data.name)
+        plt.suptitle(f'{data.name}',weight='bold')
+        plt.xlabel(f'{data.xlabel} in {data.xunit}')
+        plt.ylabel(f'{data.y1label} in {data.y1unit}')
+        plt.grid(True)
+        
+        plt.xlim(meta.number[0],meta.number[1])
+        
+        plt.xscale('linear')
+        plt.yscale('linear')
+       
     
     if meta.rows == 2: #Einfacher Graph    
         plt.figure(figsize=(10,8))
