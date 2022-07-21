@@ -10,8 +10,9 @@ Rechnungen
 import numpy as np
 from numpy import pi, sqrt, arctan, arccos
 from source import metadata, dataset
+from scipy.integrate import quad
 
-
+#%% differential path length
 
 def difpld(lbound, rbound, steps, l, w, h):
      
@@ -56,9 +57,7 @@ def difpld(lbound, rbound, steps, l, w, h):
     meta.number = (lbound, rbound)
      
     return meta, data #, Cs_y
-     
-        
-     
+    
 def G(s,x,y,z):
     
     """ Bendel-Approach for iterative calculation of the difpld """
@@ -98,10 +97,42 @@ def G(s,x,y,z):
       #  +y*Q*(4-T**2/s**2)-6*x*y*(p/s)**2*arccos(x/p)
       #  J3 = I3 + B6 -3*x**2 + 1.5*pi*x*z      
         
-    
    # sumJ = J1 + J2 + J3 
     G_a = ((N1+N2+N3)/norm)
     
-    
     return G_a #,sumJ
     
+#%% Interpolation
+
+def interp(x, y, xvalue):
+   
+    yvalue = 0 
+
+    for i in range(len(y)-1):
+      
+       if (xvalue > x[i]) and (xvalue < x[i+1]):
+           yvalue = y[i] + ((y[i+1]-y[i])/(x[i+1]-x[i])) * (xvalue - x[i])
+           
+       if xvalue == x[i]:
+           yvalue = y[i]
+    
+    return yvalue
+
+
+#%% Adams Integral
+
+def adamsint(L, difpl, LET, xe, Qc):
+    
+    #integral of D[p(L)]*F(L) / L^2 
+    
+    p = xe*Qc/L
+    D = interp(difpl.xaxis, difpl.y1axis, p) #value of difpl at position p(L)
+    F = interp(LET.xaxis, LET.y1axis, L)    #value of integral LET spectrum at position L
+    
+    integral = (D*F)/L**2
+    
+    return integral
+    
+    
+    
+

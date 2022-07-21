@@ -12,6 +12,42 @@ import numpy as np
 from numpy import pi, sqrt, arctan, arccos
 import random as random
 
+
+xvalue = 3.3
+x = [1,2,3,4,5,6,7]
+y = [0,2,2**2,2**3,2**4,2**5,2**6]
+
+
+for i in range(len(y)-1):
+    
+    if (xvalue > x[i]) and (xvalue < x[i+1]):
+        yvalue = y[i] + ((y[i+1]-y[i])/(x[i+1]-x[i])) * (xvalue - x[i])
+        
+    if xvalue == x[i]:
+        yvalue = y[i]
+
+
+print(x)
+print(y)
+print("\n")
+print (yvalue)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
 sens_vol = (1, 0.5, 0.1)
 (w,l,h) = sens_vol
 
@@ -72,7 +108,7 @@ plt.plot(lsgx,lsgy_ex, '--')
 plt.ylim(0,20)
 plt.grid(True)
 plt.show()
-
+"""
 
 """
 

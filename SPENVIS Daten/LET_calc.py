@@ -23,7 +23,7 @@ from numpy import pi, sqrt, arctan, arccos
 
 from scipy.integrate import quad
 from source import import_data, plot_this #import Functions
-from calc import difpld
+from calc import difpld, adamsint
 
 
 #########################################################################
@@ -40,9 +40,11 @@ X = 3.6 #[eV] Energy needed to create ine electron-hole pair (3.6 eV in SI; 4.8 
 # LET-Data
 
 (metabase, database)=import_data('spenvis_nlof_srimsi.txt',',') # SPENVIS Data
-plot_this(metabase[0],database[0])
-plot_this(metabase[1],database[1])
+#plot_this(metabase[0],database[0])
 plot_this(metabase[2],database[2])
+#plot_this(metabase[2],database[2])
+
+LET_data = database[2]
 
 #%% CONVERSIONS:
 
@@ -52,20 +54,18 @@ X = X*(10**-6) # convert to [MeV]
 
 #%% PARAMETERS:
 L_max = 1.05*(10**5) # highest LET any stopping ion can deliver [MeV*cm^2*g^-1]
-p_max = sqrt(wm**2+lm**2+hm**2) #largest diameter if the sensitive volume [g/cm^2]
-Q_c = (e*L_min*p_max)/X #minimum charge for Upset [pC]
+p_max = sqrt(w**2+l**2+h**2) #largest diameter if the sensitive volume [g/cm^2]
+Q_c = (e*L_min*p_max)/(X) #minimum charge for Upset [pC]
 S_min = Q_c/0.28
-A_p = 0.5*(wm*hm+wm*lm+hm*lm) #Average projected Area of sensitive Volume [m^2]
-A = A_p * 4 #[m^2] surface area of sensitive volume
+A_p = 0.5*(w*h+w*l+h*l) #Average projected Area of sensitive Volume [μm^2]
+A = A_p * 4 #[μm^2] surface area of sensitive volume
+p_Lmin = (X/e)*Q_c/(L_min)
 
 #%%  Differential Path length distribution
 
-
-steps = 1000
+steps = 10000
 lbound = 0
-rbound = 25
-X1 =[]
-Y1 = []
+rbound = p_Lmin
 
 
 (difmeta, difdata) = difpld(lbound, rbound, steps, w, l, h)
@@ -75,63 +75,38 @@ plot_this(difmeta, difdata)
 
 
 
-"""
+#%% Function to be integrated
+
+func_y=[]
+func_x = []
+
+for L in np.linspace(L_min, L_max, steps, True):
+
+    func = adamsint(L, difdata, LET_data, (X/e), Q_c)
+
+    func_y.append(func)
+    func_x.append(L)
 
 
+plt.plot(func_x,func_y)
+plt.xscale('log')
+plt.show()
 
+#%% Integral Calculation
 
-E_R = 0 # Error Rate for sensitive Volume (events/day)
+integral = 0.
 
-def E_R_integral(S):
-    return (  )
+stepsize = (abs(L_max-L_min)/steps)
 
-E_R_integral_value = quad(E_R_integral, S_min, S_max)
-
-#E_R = A_p * 
-
+for i in range(1, steps):
     
-    
-
-## Rechnung:
+    integral = (func_y[i]-func_y[i-1]) + integral
 
 
-       """                                                                
+#%% Final Calculation 
 
+transistoren = 2 * 10**6 #??? Number of bits per chip
 
+U = pi * A * (X/e) * Q_c * integral
 
-"""
-
-
-#%% Iterating Data:
-db_data = 17    
-
-i = 0 # Iterator
-    
-L = database[db_data].xaxis[i] # LET [MeV*cm^2*g^-1]  **Abhängig von Integral Flux**
-F = database[db_data].y1axis[i] # Integral LET spectrum [particles*m^-2*s^-1*sr^-1] 
-    
-def p(L): # path length over which an ion of LET L will produce a charge Q_c
-    return ((X/e) * (Q_c/L))
-
-def D(p): # = D(p(L)) differential path length distribution in the sensitive volume of each memory cell [cm^2*g^-1]
-    return 0 # ???
-
-
-U = 0 # Upset Rate [bit^-1 s^-1]
-
-def U_integral(L):
-    return ( (D(p(L))*F) / (L**2) )
-
-U_integral_value = quad(U_integral, L_min, L_max)
-
-U = pi * A * (X/e) * Q_c * U_integral_value
-
-
-# Direct ionisation upset rates
-
-# Proton induces upset rates
-
-
-
-#plot_this(metabase[0], database[0])
-"""
+print(f'Upset Rate U = {U} [bit^-1 s^-1]')
