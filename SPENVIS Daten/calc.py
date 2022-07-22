@@ -126,6 +126,7 @@ def adamsint(L, difpl, LET, xe, Qc):
     #integral of D[p(L)]*F(L) / L^2 
     
     p = xe*Qc/L
+    
     D = interp(difpl.xaxis, difpl.y1axis, p) #value of difpl at position p(L)
     F = interp(LET.xaxis, LET.y1axis, L)    #value of integral LET spectrum at position L
     

@@ -5,7 +5,6 @@ Created on Wed Jul 13 11:14:33 2022
 @author: Tobias Kurz
 """
 """ 
-
     Annahmen:
     
     - RPP model (idealized rectangular parallellopiped)
@@ -14,8 +13,8 @@ Created on Wed Jul 13 11:14:33 2022
     - Erste Tests : no Shielding
       (Später: Shielding Thickness : 0.2 cm)
     
-
 """
+
 from tabulate import tabulate
 import matplotlib.pyplot as plt
 import numpy as np
@@ -58,7 +57,7 @@ p_max = sqrt(w**2+l**2+h**2) #largest diameter if the sensitive volume [g/cm^2]
 Q_c = (e*L_min*p_max)/(X) #minimum charge for Upset [pC]
 S_min = Q_c/0.28
 A_p = 0.5*(w*h+w*l+h*l) #Average projected Area of sensitive Volume [μm^2]
-A = A_p * 4 #[μm^2] surface area of sensitive volume
+A = A_p * 4 *10**-12 #[m^2] surface area of sensitive volume
 p_Lmin = (X/e)*Q_c/(L_min)
 
 #%%  Differential Path length distribution
@@ -72,13 +71,12 @@ rbound = p_Lmin
 
 plot_this(difmeta, difdata)
 
-
-
-
 #%% Function to be integrated
 
 func_y=[]
 func_x = []
+
+
 
 for L in np.linspace(L_min, L_max, steps, True):
 
@@ -98,15 +96,45 @@ integral = 0.
 
 stepsize = (abs(L_max-L_min)/steps)
 
-for i in range(1, steps):
+for i in range(steps):
     
-    integral = (func_y[i]-func_y[i-1]) + integral
+    integral = (func_y[i])*stepsize + integral
 
 
 #%% Final Calculation 
 
-transistoren = 2 * 10**6 #??? Number of bits per chip
-
 U = pi * A * (X/e) * Q_c * integral
 
 print(f'Upset Rate U = {U} [bit^-1 s^-1]')
+
+#%% Probability Calculations
+
+U = 5*10**-8
+
+eu =  2.71828182846
+err_prob = []
+
+s_to_d = 60*60*24
+sVol_count = 10**6
+
+n = sVol_count * s_to_d
+
+mue = n * U
+
+curvex = range(round(mue)-400, round(mue)+400)
+
+sigma = sqrt(n*U*(1-U))
+
+for k in curvex:
+    f = ( 1/sqrt((sigma**2)*2*pi))*eu**(-((k-mue)**2)/(2*(sigma)**2))
+    err_prob.append(f)
+    
+plt.plot(curvex,err_prob)
+plt.show()
+
+# wahrscheinlichkeit integriert
+chance = 0
+
+for k in range(len(curvex)):
+    chance = chance + err_prob[k]
+print(chance)

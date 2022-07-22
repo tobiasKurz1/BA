@@ -11,8 +11,15 @@ from tabulate import tabulate
 import numpy as np
 from numpy import pi, sqrt, arctan, arccos
 import random as random
+import scipy.special as sp
 
 
+print(sp.binom(1000,100))
+
+
+
+
+"""
 xvalue = 3.3
 x = [1,2,3,4,5,6,7]
 y = [0,2,2**2,2**3,2**4,2**5,2**6]
@@ -34,7 +41,7 @@ print (yvalue)
 
 
 
-
+"""
 
 
 
