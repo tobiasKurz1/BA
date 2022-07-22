@@ -62,7 +62,7 @@ p_Lmin = (X/e)*Q_c/(L_min)
 
 #%%  Differential Path length distribution
 
-steps = 10000
+steps = 1000000
 lbound = 0
 rbound = p_Lmin
 
@@ -85,7 +85,8 @@ for L in np.linspace(L_min, L_max, steps, True):
     func_y.append(func)
     func_x.append(L)
 
-
+plt.figure(figsize=(10,8))
+plt.suptitle(f'Function to be Integrated \n Number of Iterations: {steps}; Stepsize: {abs(L_max-L_min)/steps}')
 plt.plot(func_x,func_y)
 plt.xscale('log')
 plt.show()
@@ -109,7 +110,7 @@ print(f'Upset Rate U = {U} [bit^-1 s^-1]')
 
 #%% Probability Calculations
 
-U = 5*10**-8
+
 
 eu =  2.71828182846
 err_prob = []
@@ -121,16 +122,16 @@ n = sVol_count * s_to_d
 
 mue = n * U
 
-curvex = range(round(mue)-400, round(mue)+400)
+curvex = range(round(mue-(0.002*mue)), round(mue+(0.002*mue)))
 
 sigma = sqrt(n*U*(1-U))
 
 for k in curvex:
     f = ( 1/sqrt((sigma**2)*2*pi))*eu**(-((k-mue)**2)/(2*(sigma)**2))
-    err_prob.append(f)
-    
-plt.plot(curvex,err_prob)
-plt.show()
+    err_prob.append(f*100)
+
+
+
 
 # wahrscheinlichkeit integriert
 chance = 0
@@ -138,3 +139,13 @@ chance = 0
 for k in range(len(curvex)):
     chance = chance + err_prob[k]
 print(chance)
+
+plt.figure(figsize=(10,8))
+plt.plot(curvex, err_prob, color='b')
+plt.suptitle(f'Probability Distribution of Errors per Chip ({sVol_count} Transistors) per Day \n μ={round(mue,2)}; σ={round(sigma,2)} \n chance of outcome included in shown distribution: {round(chance,2)}%')
+plt.xlabel(f'Number of Errors \n Error Rate per bit per second: {U}')
+plt.ylabel('Probability in %')
+plt.grid(True)
+
+plt.show()
+

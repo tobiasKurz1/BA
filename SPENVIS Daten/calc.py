@@ -112,9 +112,11 @@ def interp(x, y, xvalue):
       
        if (xvalue > x[i]) and (xvalue < x[i+1]):
            yvalue = y[i] + ((y[i+1]-y[i])/(x[i+1]-x[i])) * (xvalue - x[i])
+           break
            
        if xvalue == x[i]:
            yvalue = y[i]
+           break
     
     return yvalue
 
