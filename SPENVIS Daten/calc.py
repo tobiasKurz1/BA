@@ -123,7 +123,7 @@ def interp(x, y, xvalue):
 
 #%% Adams Integral
 
-def adamsint(L, difpl, LET, xe, Qc):
+def adamsint(L, difpl, LET, xe, Qc, Dvec, Fvec):
     
     #integral of D[p(L)]*F(L) / L^2 
     
@@ -132,9 +132,15 @@ def adamsint(L, difpl, LET, xe, Qc):
     D = interp(difpl.xaxis, difpl.y1axis, p) #value of difpl at position p(L)
     F = interp(LET.xaxis, LET.y1axis, L)    #value of integral LET spectrum at position L
     
+ #   Dvec.append(D)
+ #   Fvec.append(F)
+    
     integral = (D*F)/L**2
     
-    return integral
+    
+    
+    
+    return integral#, Dvec, Fvec
     
     
     
