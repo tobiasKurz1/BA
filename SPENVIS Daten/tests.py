@@ -13,11 +13,11 @@ from numpy import pi, sqrt, arctan, arccos
 import random as random
 import scipy.special as sp
 
+test = 'blabla neu bla ne'
 
-print(sp.binom(1000,100))
+print(test)
 
-
-
+if not('nu') in test: print("nicht gefunden")
 
 """
 xvalue = 3.3

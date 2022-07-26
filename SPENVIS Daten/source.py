@@ -7,7 +7,7 @@ Created on Thu Jun 30 13:49:03 2022
 Funktionen
 
 """
-
+import sys
 import matplotlib.pyplot as plt
 #import numpy as np
 import colorsys
@@ -38,15 +38,49 @@ class dataset:
         self.y2unit =y2unit
 
 #%% Functions
-        
-# Gibt eine 1 zurück, wenn der Anfang eines Blocks gefunden wurde
+    
+
+
+# Takes a database as input and lists all the packages inside
+# User can then choose which one, also gives option to exit program
+# Error and fault proof
+def usersurvey(database):
+    print("The following Data was found:\n")
+    for i in range(len(database)):
+        print(f'({i}) {database[i].name} from {database[i].segment}')
+
+    print(f'({len(database)}) EXIT')
+    while True:
+        while True:
+            chosenDB = (input("Which database do you want to use?\n"))
+            try:
+                chosenDB = int(chosenDB)
+                break
+            except:
+                if ('exit') in chosenDB:
+                    print("Exiting Program...")
+                    sys.exit()
+                else: print(f'You need to enter a Number between 0 and {len(database)}!\n')
+            
+        if chosenDB == len(database): 
+            print("Exiting Program...")
+            sys.exit()
+        if chosenDB > len(database):
+            print("Number too high! Try again or Exit with 'exit'\n")
+        elif not('LET') in database[chosenDB].name:  
+            print("No LET Data found. Please choose again!\n ")
+        else: break
+    return chosenDB
+
+    
+# Returns 1 if beginning of a new Block is found
 def block_starts(ls):
     if ("'*'") in ls:
         return(1)
     else:
         return(0)
 
-# Gibt eine 1 zurück, wenn das Ende eines Blocks gefunden wurde
+# Returns 1 if end of a Block is found
 def block_ends(ls):
     if ("'End of Block'") in ls:
         return(1)
@@ -55,16 +89,16 @@ def block_ends(ls):
     else:
         return (0)
     
-# Fuellt Metadata-Klasse mit Informationen aus der ersten Zeile  
+# Uses first Line of every Block to fill metadata about following data
 def get_meta(row):
     newMeta = metadata(int(row[1]), int(row[7]), int(row[6]), int(row[8]))
     return newMeta
     
-# Liest die entsprechenden Daten aus den Bloecken aus und speichert in Klasse Datensatz
+# Fills dataset class with data from current Block
 def get_data(meta, block):
     
     labels = meta.rows
-    if meta.rows > 3: labels = 3
+    if meta.rows > 3: labels = 3 #Different approaches for different Data Structures
     data = dataset()
     data.xaxis = []
     data.y1axis = []
@@ -97,7 +131,7 @@ def get_data(meta, block):
         
         l += 1
         
-        #Separate While Schleife für die daten (zur optimierung)
+        #Separate While Loop for data Block only (optimization)
         while (l >= meta.dataStart and l < (meta.dataStart + meta.lines)):
             
             data.xaxis.append(float(block[l][0]))
@@ -115,7 +149,7 @@ def get_data(meta, block):
             
     return data
 
-# Saeubert den Text
+# Cleans up text from SPENVIS file for visualisation in Graph
 def cleanup_text(meta, data):
     data.name = data.name.replace("'","")
     data.segment = data.segment.replace("'","")
@@ -137,9 +171,9 @@ def cleanup_text(meta, data):
         data.y2unit = data.y2unit.replace("!u","^")
         data.y2unit = data.y2unit.replace("!n","") 
 
-# importiert Daten unter Nutzung der anderen Funktionen (Ersatz für "LET Daten.py")
+# Imports Data from SPENVIS FILE while using other functions from the source.py file
 def import_data(file, delimiter):
-    line = 0                             # line starter
+    line = 0                             
     database = []
     metabase = []
     
@@ -169,8 +203,8 @@ def import_data(file, delimiter):
     return metabase, database
 
 
-#%% Plots
-
+# Plots different types of data from SPENVIS. Data has so be in meta/data structure format.
+# All data form spenvis_nlof_srimsi.txt and spenvis_nlol_srimsi.txt can be plotted
 def plot_this(meta, data):  
     
     print(f'plotting {data.name} from segment {data.segment}...')
@@ -190,7 +224,7 @@ def plot_this(meta, data):
         plt.yscale('linear')
        
     
-    if meta.rows == 2: #Einfacher Graph    
+    if meta.rows == 2: #simple Graph    
         plt.figure(figsize=(10,8))
         plt.plot(data.xaxis, data.y1axis, color='b', label = data.name)
         plt.suptitle(f'DB:{meta.number} - {data.name} (Segment: {data.segment})',weight='bold')
@@ -201,9 +235,9 @@ def plot_this(meta, data):
         plt.xscale('log')
         plt.yscale('log')
     
-    if meta.rows == 3: #Graph mit zwei Y-Achsen
+    if meta.rows == 3: #double Graph
         fig, ax1 = plt.subplots(figsize = (10,8))
-        ax1.set_xlabel(f'{data.xlabel} in {data.xunit}') #Benennung x-Achse
+        ax1.set_xlabel(f'{data.xlabel} in {data.xunit}') 
         ax1.set_ylabel(f'{data.y1label} in {data.y1unit}', color='r')
         ax1.plot(data.xaxis, data.y1axis, color='r')
         ax1.tick_params(axis='y', labelcolor='r')
@@ -221,30 +255,8 @@ def plot_this(meta, data):
         plt.xscale('log')
         plt.yscale('log')
     
-    # if meta.rows > 3: #Balkendiagramm
-        
-    #     r = list(range(len(data.xaxis)))
-    #     barWidth = 1
-    #     colorwheel = []
-        
-    #     for s in range(len(data.species)):
-    #         colorwheel.append(colorsys.hsv_to_rgb((1.0/len(data.species))*s, 1.0, 1.0))
-
-    #     i = 0
-    #     bottombars = [0] * len(data.xaxis)   
-        
-    #     while i < len(data.species):
-    #         plt.bar(r, data.y1axis[i], bottom = bottombars, color = colorwheel[i], width = barWidth)
-    #         bottombars = np.add(bottombars, data.y1axis[i]).tolist()
-    #         i += 1
-            
-    #     plt.xticks(r, data.xaxis)
-    #     plt.xscale('linear')
-    #     plt.yscale('linear')
-    #     plt.grid(True)
-    #     plt.legend()
     
-    if meta.rows > 3: #Schichtdiagramm
+    if meta.rows > 3: #Layered Graph
         colorwheel = []
         for s in range(len(data.species)):
             colorwheel.append(colorsys.hsv_to_rgb((1.0/len(data.species))*(s*0.8), 1.0, 1.0))
