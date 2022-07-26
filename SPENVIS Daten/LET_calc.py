@@ -71,15 +71,10 @@ A_p = 0.5*(w*h+w*l+h*l) #Average projected Area of sensitive Volume [μm^2]
 A = A_p * 4 *10**-12 #[m^2] surface area of sensitive volume
 p_Lmin = (X/e)*Q_c/(L_min)
 
-
-
-
-
-
     
  #%%  Differential Path length distribution
  
-steps = 10000
+steps = 2000000
 lbound = 0
 rbound = p_Lmin
 
@@ -98,7 +93,7 @@ for L in np.linspace(L_min, L_max, steps, True):
     func = adamsint(L, difdata, LET_data, (X/e), Q_c)
     func_y.append(func)
     func_x.append(L)
-    print(f'\rInterpolationen zu {round(L*100/abs(L_max-L_min))}% berechnet...              ', end = "")
+    print(f'\rInterpolating data {round(L*100/abs(L_max-L_min))}% ...              ', end = "")
 print("") 
 plt.figure(figsize=(10,8))
 plt.suptitle(f'Function to be Integrated \n Number of Iterations: {steps}; Stepsize: {abs(L_max-L_min)/steps}')
@@ -116,7 +111,7 @@ stepsize = (abs(L_max-L_min)/steps)
 for i in range(steps):
     
     integral = (func_y[i])*stepsize + integral
-    print(f'\rIntegral zu {round(i*100/(steps))}% berechnet...              ', end = "")
+    print(f'\rCalculating integral {round(i*100/(steps))}% ...              ', end = "")
 
 print("")    
 #%% Final Calculation 
@@ -158,7 +153,7 @@ print(f'Chance of {round(mue)} ± {round(mue-curvex[0])} Errors per Chip per Day
 
 plt.figure(figsize=(10,8))
 plt.plot(curvex, err_prob, color='b')
-plt.suptitle(f'Probability Distribution of Errors per Chip ({sVol_count} Transistors) per Day \n μ={round(mue,2)}; σ={round(sigma,2)} \n chance of outcome included in shown distribution: {round(chance,2)}%')
+plt.suptitle(f'Probability Distribution of Errors per Chip ({sVol_count} Transistors) per Day \n μ={round(mue,2)}; σ={round(sigma,2)} \n chance of the outcome to be included in the shown distribution: {round(chance,2)}%')
 plt.xlabel(f'Number of Errors \n Error Rate per bit per second: {U}')
 plt.ylabel('Probability in %')
 plt.grid(True)

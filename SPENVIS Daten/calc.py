@@ -31,7 +31,7 @@ def difpld(lbound, rbound, steps, l, w, h):
         difpld_y.append(difpld)
         difpld_x.append(s)
         
-        print(f'\rdifpld zu {round(s*100/(rbound-lbound))}% berechnet...              ', end = "")
+        print(f'\rCalculating difpld {round(s*100/(rbound-lbound))}% ...              ', end = "")
 
     print("")   
     # Dataformat:
