@@ -7,13 +7,25 @@ Created on Thu Jun 30 13:49:03 2022
 Funktionen
 
 """
+from tabulate import tabulate
 import sys
 import matplotlib.pyplot as plt
 #import numpy as np
 import colorsys
 import csv
 
+#from numpy import pi, sqrt, arctan, arccos
+
 #%% Classes
+
+class input_var:
+    def __init__(self, dimensions, X, L_min, steps, sVol_count, scale):
+        self.dimensions = dimensions
+        self.X = X
+        self.L_min = L_min
+        self.steps = steps
+        self.sVol_count = sVol_count
+        self.scale = scale
 
 class metadata:
     def __init__(self, dataStart = [], lines = [], rows = [],  number = []):
@@ -38,7 +50,40 @@ class dataset:
         self.y2unit =y2unit
 
 #%% Functions
+
+def usercheck(v,d):
+    print("\nCheck before calculating:\n")
+
+    inputview = [["(1)","w,l,h", f'{v.w}, {v.l}, {v.h}' ,"μm"],
+                 ["(2)","L_min", v.L_min, "MeV*cm^2*g^-1"],
+                 ["(3)","File", f'{d.name} in {d.segment}', " - "],
+                 ["(4)","Steps", "{:.2e}".format(v.steps), " - "],
+                 ["(5)","Predicted Stepsize", abs(v.L_max-v.L_min)/v.steps, "-" ],
+                 ["(6)","Number of Transistors", "{:.2e}".format(v.sVol_count), " - "],
+                 ["(7)", "Scale of the Calculation Axis", v.scale, " - "]]
+
+    print(tabulate(inputview, headers=["","Name","Value","Unit"]))
+
+    choice = (input("Proceed or change settings? (J/N) "))
+    if (choice == 'n') or (choice == 'N'): print("Exiting Program..."); sys.exit()
+
+    return()
+
+def userinput():
+    X = float(input("X Dimension of the sensitive Volume in μm: "))
+    Y = float(input("Y Dimension of the sensitive Volume in μm: "))
+    Z = float(input("Z Dimension of the sensitive Volume in μm: "))
+    dimensions = (X,Y,Z)
+    X_ = float(input("Energy needed to create one electron-hole pair in eV (3.6 eV in SI; 4.8 eV in GaAs): "))
+    L_min = float(input("Required minimum LET for an upset with p_max in MeV*cm^2*mg^-1: "))
+    steps = int(input("Number of iteration Steps for the calculation and integral: "))
+    sVol_count = int(input("Number of sensitive Volumes (chips/transistors): "))
+    scale = input("Scale of the calculation (lin/log): ")
     
+    inputvars = input_var(dimensions, X_, L_min, steps, sVol_count, scale)
+    
+    return inputvars
+
 
 
 # Takes a database as input and lists all the packages inside

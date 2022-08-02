@@ -13,12 +13,34 @@ from numpy import pi, sqrt, arctan, arccos
 import random as random
 import scipy.special as sp
 
-test = 'blabla neu bla ne'
 
-print(test)
+class testclass:
+    def __init__(self, zahl, zahlmal2):
+        self.zahl = zahl
+        self.zahlmal2 = zahlmal2
 
-if not('nu') in test: print("nicht gefunden")
+nummer = (1,2)
 
+
+test = testclass(nummer[0],nummer[1])
+
+
+
+
+
+"""
+start = 1.4
+stop = 67
+
+
+
+test = np.logspace(np.log10(start),np.log10(stop), 50, True)
+
+plt.figure(figsize=(30,2))
+plt.plot(test,[1]*len(test), marker="o")
+plt.xscale('log')
+plt.show()
+"""
 """
 xvalue = 3.3
 x = [1,2,3,4,5,6,7]

@@ -6,10 +6,34 @@ Rechnungen
 
 @author: Tobias Kurz
 """
-
+from tabulate import tabulate
+import matplotlib.pyplot as plt
 import numpy as np
+from source import metadata, dataset, usercheck, import_data, plot_this, usersurvey, input_var #import Functions
+
+import sys
+
 from numpy import pi, sqrt, arctan, arccos
-from source import metadata, dataset
+
+
+class calc_var:
+    def __init__(self, input_vars):
+        self.w = input_vars.dimensions[0]
+        self.l = input_vars.dimensions[1]
+        self.h = input_vars.dimensions[2]
+        self.L_min = input_vars.L_min * 10**3 # convert to [Mev*cm^2*g^-1]
+        self.steps = input_vars.steps
+        self.sVol_count = input_vars.sVol_count
+        self.e = 1.602*(10**-7) #[pC] elementary charge 
+        self.X = input_vars.X * (10**-6) # convert to [MeV]
+        self.L_max = 1.05*(10**5) # highest LET any stopping ion can deliver [MeV*cm^2*g^-1]
+        self.p_max = sqrt(self.w**2+self.l**2+self.h**2) #largest diameter of the sensitive volume [g/cm^2]
+        self.Q_c = (self.e*self.L_min*self.p_max)/(self.X) #minimum charge for Upset [pC]
+        self.S_min = self.Q_c/0.28
+        self.A_p = 0.5*(self.w*self.h+self.w*self.l+self.h*self.l) #Average projected Area of sensitive Volume [μm^2]
+        self.A = self.A_p * 4 *10**-12 #[m^2] surface area of sensitive volume
+        self.p_Lmin = (self.X/self.e)*self.Q_c/(self.L_min)
+        self.scale = input_vars.scale
 
 
 #%% differential path length
@@ -101,20 +125,127 @@ def interp(x, y, xvalue):
 
 #%% Adams Integral
 
-def adamsint(L, difpl, LET, xe, Qc):
+def adamsint(L, difpl, LET, p_L):
     # The used values are interpolated from existing Data
     # function which will be integrated in the next step
     # D[p(L)]*F(L) / L^2 
     
-    p = xe*Qc/L
-    
-    D = interp(difpl.xaxis, difpl.y1axis, p) #value of difpl at position p(L)
+    D = interp(difpl.xaxis, difpl.y1axis, p_L) #value of difpl at position p(L)
     F = interp(LET.xaxis, LET.y1axis, L)    #value of integral LET spectrum at position L
     
     integrant = (D*F)/L**2
     
     return integrant
     
+def upsetrate(inputs, LET_data, LET_meta, plotdata):
     
+    var = calc_var(inputs)     
+
+    lbound = 0
+    rbound = var.p_Lmin
+ 
+    if (var.L_min > var.L_max): print("ERROR: Could not Compute! (L_min > L_Max)\nExiting Program..."); sys.exit()
+
+    usercheck(var, LET_data)
+
+    if plotdata == True: plot_this(LET_meta,LET_data)
+
+    (difmeta, difdata) = difpld(lbound, rbound, var.steps, var.w, var.l, var.h)
+    
+    if plotdata == True: plot_this(difmeta, difdata)
+    
+    #%%  Differential Path length distribution
+   
+    func_y=[]
+    func_x = []
+    
+    if ('log') in var.scale: scale = np.logspace(np.log10(var.L_min), np.log10(var.L_max), var.steps, True)
+    if ('lin') in var.scale: scale = np.linspace(var.L_min, var.L_max, var.steps, True)
+    if (not(('lin') in var.scale) and not (('log') in var.scale)): print("ERROR!\nPlease enter scale 'lin' or 'log'.\nExiting Program now..."); sys.exit()
+    
+    p_Lscale=[]
+   
+    for i in range(var.steps):
+        L = scale[i]
+       
+        p_L = (var.X/var.e)*var.Q_c/L
+        p_Lscale.append(p_L)
+        func = adamsint(L, difdata, LET_data, p_L)
+        func_y.append(func)
+        func_x.append(L)
+        print(f'\rInterpolating data {round((L-var.L_min)*100/abs(var.L_max-var.L_min))}% ...              ', end = "")
+    print("")
+   
+    
+    if plotdata == True:
+        plt.figure(figsize=(10,8))
+        plt.suptitle(f'Function to be Integrated \n Number of Iterations: {var.steps}; Stepsize: {abs(var.L_max-var.L_min)/var.steps}')
+        plt.plot(func_x,func_y)
+        plt.xscale('log')
+        plt.show()
+   
+
+#%% Integral Calculation
+
+    integral = 0.
+
+    for i in range(1,var.steps):
+    
+        integral = (func_y[i])*(scale[i]-scale[i-1])+integral
+        print(f'\rCalculating integral {round(i*100/(var.steps))}% ...              ', end = "")
+
+    print("") 
+    
+#%% Final Calculation 
+
+    U = pi * var.A * (var.X/var.e) * var.Q_c * integral
+
+    print(f'\nUpset Rate U = {U} [bit^-1 s^-1]')
+    
+#%% Probability Calculations
+
+    eu =  2.71828182846
+    err_prob = []
+    
+    s_to_d = 60*60*24
+    d_to_y = 265
+    
+    
+    n = var.sVol_count * s_to_d * d_to_y
+    
+    mue = n * U # Expected count
+    
+    sigma = sqrt(n*U*(1-U))
+    
+    if ((n*U*(1-U))<= 9): 
+        print("\nProbability U is too low! Gaussian probability distribution will not give a reasonable result.")
+        print(f'Most likely outcome μ={mue} [Errors per day].\nTry lowering L_min or increasing transistor count.\n\nThe program will exit now.'); sys.exit()
+        print(f'Most likely outcome μ={mue*365} [Errors per year].')
+    curvex = range(round(mue-(mue*(2*sigma/mue))), round(mue+(mue*(2*sigma/mue))))
+    
+    
+    for k in curvex:
+        f = ( 1/sqrt((sigma**2)*2*pi))*eu**(-((k-mue)**2)/(2*(sigma)**2))
+        err_prob.append(f*100)
+    
+    
+    
+    
+    # wahrscheinlichkeit integriert
+    chance = 0
+    
+    for k in range(len(curvex)):
+        chance = chance + err_prob[k]
+    print(f'Chance of {round(mue)} ± {round(mue-curvex[0])} Errors per Chip per Year: {round(chance,3)}%')
+    
+    if True:
+        plt.figure(figsize=(10,8))
+        plt.plot(curvex, err_prob, color='b')
+        plt.suptitle(f'Probability Distribution of Errors per Chip ({var.sVol_count} Transistors) per Year \n μ={round(mue,2)}; σ={round(sigma,2)}\nLmin = {var.L_min}')
+        plt.xlabel(f'Number of Errors \n\n Error Rate per bit per second: {U}\nChance of {round(mue)} ± {round(mue-curvex[0])} Errors per Chip per Year: {round(chance,3)}%')
+        plt.ylabel('Probability in %')
+        plt.grid(True)
+        
+        plt.show()
     
 

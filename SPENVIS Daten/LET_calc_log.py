@@ -32,33 +32,33 @@ Functions Used:
     adamsint    : Computes the function, which is later to be integrated for the final calculation
     
 """
-
+from tabulate import tabulate
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import pi, sqrt
 from source import import_data, plot_this, usersurvey #import Functions
 from calc import difpld, adamsint
-
+import sys
 
 #%% INPUTS:
     
-(w,l,h) = (20, 10, 5) #[μm] dimensions of Sensitive Volume (length, width, thickness)
-L_min = 100 #[MeV*cm^2*g^-1] required minimum LET for an upset with p_max 
+(w,l,h) = (20, 10, 50) #[μm] dimensions of Sensitive Volume (length, width, thickness)
+L_min = 5 #[MeV*cm^2*mg^-1] required minimum LET for an upset with p_max 
 e = 1.602*(10**-7) #[pC] elementary charge 
-X = 3.6 #[eV] Energy needed to create ine electron-hole pair (3.6 eV in SI; 4.8 eV in GaAs) 
+X = 3.6 #[eV] Energy needed to create one electron-hole pair (3.6 eV in SI; 4.8 eV in GaAs) 
 
 
 (metabase, database)=import_data('spenvis_nlof_srimsi.txt',',') # SPENVIS Data
 
-chosenDB = usersurvey(database) # Read and present data from Database
+chosenDB = usersurvey(database) # Read and present data from Database to choose from
 
 LET_data = database[chosenDB] # apply chosen Data
 
-plot_this(metabase[chosenDB],database[chosenDB]) # plot chosen Data
+
 
 
 #%% CONVERSIONS:
-
+L_min = L_min * 10**3 # convert to [Mev*cm^2*g^-1]
 X = X*(10**-6) # convert to [MeV]
 
 #%% PARAMETERS:
@@ -71,30 +71,59 @@ A_p = 0.5*(w*h+w*l+h*l) #Average projected Area of sensitive Volume [μm^2]
 A = A_p * 4 *10**-12 #[m^2] surface area of sensitive volume
 p_Lmin = (X/e)*Q_c/(L_min)
 
-    
- #%%  Differential Path length distribution
- 
-steps = 2000000
+steps = 50
 lbound = 0
 rbound = p_Lmin
+sVol_count = 100
 
+if (L_min > L_max): print("ERROR: Could not Compute! (L_min > L_Max)\nExiting Program..."); sys.exit()
+
+#%%
+print("\nCheck before calculating:\n")
+
+inputview = [["(1)","w,l,h", f'{w}, {l}, {h}' ,"μm"],
+             ["(2)","L_min", L_min, "MeV*cm^2*g^-1"],
+             ["(3)","File", f'{database[chosenDB].name} in {database[chosenDB].segment}', " - "],
+             ["(4)","Steps", "{:.2e}".format(steps), " - "],
+             ["(5)","Predicted Stepsize", abs(L_max-L_min)/steps, "-" ],
+             ["(6)","Number of Transistors", "{:.2e}".format(sVol_count), " - "]]
+
+print(tabulate(inputview, headers=["","Name","Value","Unit"]))
+
+choice = (input("Proceed or change settings? (J/N) "))
+if (choice == 'n') or (choice == 'N'): print("Exiting Program..."); sys.exit()
+#if choice
+
+
+plot_this(metabase[chosenDB],database[chosenDB]) # plot chosen Data
+
+  
+ #%%  Differential Path length distribution
+ 
 
 (difmeta, difdata) = difpld(lbound, rbound, steps, w, l, h)
  
-# plot_this(difmeta, difdata)
+#plot_this(difmeta, difdata)
  
 #%% Function to be integrated
  
 func_y=[]
 func_x = []
+logscale = np.logspace(np.log10(L_min), np.log10(L_max), steps, True)
+linscale = np.linspace(L_min, L_max, steps, True)
+p_Lscale=[]
 
-for L in np.linspace(L_min, L_max, steps, True):
-
-    func = adamsint(L, difdata, LET_data, (X/e), Q_c)
+for i in range(steps):
+    L = logscale[i]
+    
+    p_L = (X/e)*Q_c/L
+    p_Lscale.append(p_L)
+    func = adamsint(L, difdata, LET_data, p_L)
     func_y.append(func)
     func_x.append(L)
-    print(f'\rInterpolating data {round(L*100/abs(L_max-L_min))}% ...              ', end = "")
+    print(f'\rInterpolating data {round((L-L_min)*100/abs(L_max-L_min))}% ...              ', end = "")
 print("") 
+
 plt.figure(figsize=(10,8))
 plt.suptitle(f'Function to be Integrated \n Number of Iterations: {steps}; Stepsize: {abs(L_max-L_min)/steps}')
 plt.plot(func_x,func_y)
@@ -108,9 +137,9 @@ integral = 0.
 
 stepsize = (abs(L_max-L_min)/steps)
 
-for i in range(steps):
+for i in range(1,steps):
     
-    integral = (func_y[i])*stepsize + integral
+    integral = (func_y[i])*(logscale[i]-logscale[i-1])+integral
     print(f'\rCalculating integral {round(i*100/(steps))}% ...              ', end = "")
 
 print("")    
@@ -125,15 +154,19 @@ print(f'\nUpset Rate U = {U} [bit^-1 s^-1]')
 eu =  2.71828182846
 err_prob = []
 
-s_to_d = 60*60*24
-sVol_count = 10**6
+s_to_d = 60*60*24*365
+
 
 n = sVol_count * s_to_d
 
-mue = n * U
+mue = n * U # Expected count
 
 sigma = sqrt(n*U*(1-U))
 
+if ((n*U*(1-U))<= 9): 
+    print("\nProbability U is too low! Gaussian probability distribution will not give a reasonable result.")
+    print(f'Most likely outcome μ={mue} [Errors per day].\nTry lowering L_min or increasing transistor count.\n\nThe program will exit now.'); sys.exit()
+    print(f'Most likely outcome μ={mue*365} [Errors per year].')
 curvex = range(round(mue-(mue*(2*sigma/mue))), round(mue+(mue*(2*sigma/mue))))
 
 
@@ -149,12 +182,12 @@ chance = 0
 
 for k in range(len(curvex)):
     chance = chance + err_prob[k]
-print(f'Chance of {round(mue)} ± {round(mue-curvex[0])} Errors per Chip per Day: {round(chance,3)}%')
+print(f'Chance of {round(mue)} ± {round(mue-curvex[0])} Errors per Chip per Year: {round(chance,3)}%')
 
 plt.figure(figsize=(10,8))
 plt.plot(curvex, err_prob, color='b')
-plt.suptitle(f'Probability Distribution of Errors per Chip ({sVol_count} Transistors) per Day \n μ={round(mue,2)}; σ={round(sigma,2)} \n chance of the outcome to be included in the shown distribution: {round(chance,2)}%')
-plt.xlabel(f'Number of Errors \n Error Rate per bit per second: {U}')
+plt.suptitle(f'Probability Distribution of Errors per Chip ({sVol_count} Transistors) per Year \n μ={round(mue,2)}; σ={round(sigma,2)}\nLmin = {L_min}')
+plt.xlabel(f'Number of Errors \n\n Error Rate per bit per second: {U}\nChance of {round(mue)} ± {round(mue-curvex[0])} Errors per Chip per Year: {round(chance,3)}%')
 plt.ylabel('Probability in %')
 plt.grid(True)
 
