@@ -36,25 +36,34 @@ Functions Used:
 #import matplotlib.pyplot as plt
 #import numpy as np
 #from numpy import pi, sqrt
-from source import userinput, import_data, usersurvey #import Functions
+from classes import input_var
+
+#import matplotlib.pyplot as plt
+from source import usercheck, import_data, usersurvey, calc_var #import Functions
 from calc import upsetrate
 #import sys
 
-#%% INPUTS:
 
     
-inputs = userinput() # Input of user variables (x,y,z,X,L_min,steps,sVol_count)
-
 (metabase, database)=import_data('spenvis_nlof_srimsi.txt',',') # SPENVIS Data
 chosenDB = usersurvey(database) # Read and present data from Database to choose from
 (LET_meta, LET_data) = (metabase[chosenDB], database[chosenDB]) # apply chosen Data
 
+print(f'\nLET Data used: {LET_data.name} in {LET_data.segment}')
+
+inputs = input_var((20,10,5), 3.6, 10, 1000, 10**6, 'log')      #Default input variables
+
+variables = calc_var(inputs)    # Completes the list of Varibles based on Input
+
+variables = usercheck(variables) # Function to check variables and change settings
+
+
+
 temp = int(input("Do you want to plot the data step by step? (1/0)"))
 plotdata = True if temp == 1 else False
 
-upsetrate(inputs, LET_data, LET_meta, plotdata)
 
-inputs.scale = 'log'
+U = upsetrate(variables , LET_data, LET_meta, plotdata)
 
-upsetrate(inputs, LET_data, LET_meta, plotdata)
+
 

@@ -7,6 +7,7 @@ Created on Thu Jun 30 13:49:03 2022
 Funktionen
 
 """
+from classes import *
 from tabulate import tabulate
 import sys
 import matplotlib.pyplot as plt
@@ -16,80 +17,85 @@ import csv
 
 #from numpy import pi, sqrt, arctan, arccos
 
-#%% Classes
-
-class input_var:
-    def __init__(self, dimensions, X, L_min, steps, sVol_count, scale):
-        self.dimensions = dimensions
-        self.X = X
-        self.L_min = L_min
-        self.steps = steps
-        self.sVol_count = sVol_count
-        self.scale = scale
-
-class metadata:
-    def __init__(self, dataStart = [], lines = [], rows = [],  number = []):
-        self.dataStart = dataStart
-        self.lines = lines
-        self.rows = rows
-        self.number = number
-
-class dataset:
-    def __init__(self, name=[], segment='Total Mission', species = [], xaxis=[], y1axis=[], y2axis=[], xlabel=[], y1label=[], y2label=[], xunit=[], y1unit=[], y2unit=[]):
-        self.name = name
-        self.segment = segment
-        self.species = species
-        self.xaxis = xaxis
-        self.y1axis = y1axis
-        self.y2axis = y2axis
-        self.xlabel = xlabel
-        self.y1label = y1label
-        self.y2label =y2label
-        self.xunit = xunit
-        self.y1unit = y1unit
-        self.y2unit =y2unit
 
 #%% Functions
 
-def usercheck(v,d):
-    print("\nCheck before calculating:\n")
-
-    inputview = [["(1)","w,l,h", f'{v.w}, {v.l}, {v.h}' ,"μm"],
-                 ["(2)","L_min", v.L_min, "MeV*cm^2*g^-1"],
-                 ["(3)","File", f'{d.name} in {d.segment}', " - "],
-                 ["(4)","Steps", "{:.2e}".format(v.steps), " - "],
-                 ["(5)","Predicted Stepsize", abs(v.L_max-v.L_min)/v.steps, "-" ],
-                 ["(6)","Number of Transistors", "{:.2e}".format(v.sVol_count), " - "],
-                 ["(7)", "Scale of the Calculation Axis", v.scale, " - "]]
-
-    print(tabulate(inputview, headers=["","Name","Value","Unit"]))
-
-    choice = (input("Proceed or change settings? (J/N) "))
-    if (choice == 'n') or (choice == 'N'): print("Exiting Program..."); sys.exit()
-
-    return()
-
-def userinput():
-    X = float(input("X Dimension of the sensitive Volume in μm: "))
-    Y = float(input("Y Dimension of the sensitive Volume in μm: "))
-    Z = float(input("Z Dimension of the sensitive Volume in μm: "))
-    dimensions = (X,Y,Z)
-    X_ = float(input("Energy needed to create one electron-hole pair in eV (3.6 eV in SI; 4.8 eV in GaAs): "))
-    L_min = float(input("Required minimum LET for an upset with p_max in MeV*cm^2*mg^-1: "))
-    steps = int(input("Number of iteration Steps for the calculation and integral: "))
-    sVol_count = int(input("Number of sensitive Volumes (chips/transistors): "))
-    scale = input("Scale of the calculation (lin/log): ")
+def usercheck(v):
+    loop = True
+    while loop == True:
+        print("\nCheck before calculating:\n")
     
-    inputvars = input_var(dimensions, X_, L_min, steps, sVol_count, scale)
+        inputview = [["(1)","w,l,h", f'{v.w}, {v.l}, {v.h}' ,"μm"],
+                     ["(2)","L_min", v.L_min, "MeV*cm^2*g^-1"],
+                     ["(3)","Steps", "{:.2e}".format(v.steps), " - "],
+                     ["","Predicted Stepsize", abs(v.L_max-v.L_min)/v.steps, "-" ],
+                     ["(4)","Number of Transistors", "{:.2e}".format(v.sVol_count), " - "],
+                     ["(5)", "Scale of the Calculation Axis", v.scale, " - "],
+                     ["(6)", "EXIT Program", " "]]
     
-    return inputvars
+        print(tabulate(inputview, headers=["","Name","Value","Unit"])) 
+        
+        print("\nChange a Variable by Entering the corresponding Number.\nOr press Enter to Continute")
+        
+        while True:
+            
+            choice = input()
+        
+            if ("") == choice: loop = False; break
+    
+            try: 
+                choice = int(choice)
+                
+                if choice == 1: 
+                                v.w = basicinput(1., "Please enter a new value for w:")
+                                v.l = basicinput(1., "Please enter a new value for l:")
+                                v.h = basicinput(1., "Please enter a new value for h:") ; break
+                if choice == 2: 
+                                v.L_min = basicinput(1., "Please enter a new value for L_min:")
+                                if (v.L_min < v.L_max): break
+                                else: print("ERROR: Could not Compute! (L_min > L_Max)\nExiting Program..."); sys.exit()
+                if choice == 3: v.steps = basicinput(1, "Please enter a new value for steps:") ; break
+                if choice == 4: v.sVol_count = basicinput(1, "Please enter a new value for the number of sensitive Volumes:") ; break
+                if choice == 5: v.scale = basicinput(1., "Please enter a new Scale (lin/log):") ; break
+                if choice == 6: 
+                                print("Exiting Program...")
+                                sys.exit()
+            
+                else: print("Incorrect Input. Please try again.")
+            
+            except: print("Incorrect Input. Please try again.")
+    
+    return(v)
 
 
+def basicinput(example_of_data, Text):
+    
+    # Gets a Fault proof input and malkes sure the given Datatype is recieved
+    # Returns corrected input
+    
+    while True:
+        temp = input(Text)
+        try:
+            if type(example_of_data) == type(1):
+                temp = int(temp)
+                break
+            if type(example_of_data) == type("string"):
+                temp = str(temp)    
+                break
+            if type(example_of_data) == type(1.):
+                temp = float(temp)    
+                break
+        except:
+            print(f'You need to Enter a {type(example_of_data)}. Please try again.')
+    return(temp) 
 
-# Takes a database as input and lists all the packages inside
-# User can then choose which one, also gives option to exit program
-# Error and fault proof
+
 def usersurvey(database):
+    
+    # Takes a database as input and lists all the packages inside
+    # User can then choose which one, also gives option to exit program
+    # Error and fault proof
+    
     print("The following Data was found:\n")
     for i in range(len(database)):
         print(f'({i}) {database[i].name} from {database[i].segment}')

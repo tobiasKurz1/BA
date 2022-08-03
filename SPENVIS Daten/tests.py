@@ -4,28 +4,40 @@ Created on Sat Jun 25 14:56:08 2022
 
 @author: Tobias Kurz
 """
-import matplotlib.pyplot as plt
-import numpy as np
-from numpy import pi, sqrt, arctan, arccos
-from tabulate import tabulate
-import numpy as np
-from numpy import pi, sqrt, arctan, arccos
-import random as random
-import scipy.special as sp
+#import matplotlib.pyplot as plt
+#import numpy as np
+#from numpy import pi, sqrt, arctan, arccos
+#from tabulate import tabulate
+#import numpy as np
+#from numpy import pi, sqrt, arctan, arccos
+#import random as random
+#import scipy.special as sp
 
 
-class testclass:
-    def __init__(self, zahl, zahlmal2):
-        self.zahl = zahl
-        self.zahlmal2 = zahlmal2
+def basicinput(example_of_data, Text):
+    
+    while True:
+        temp = input(Text)
+        try:
+            if type(example_of_data) == type(1):
+                temp = int(temp)
+                break
+            if type(example_of_data) == type("string"):
+                temp = str(temp)    
+                break
+            if type(example_of_data) == type(1.):
+                temp = float(temp)    
+                break
+        except:
+            print(f'You need to Enter a {type(example_of_data)}. Please try again.')
+    return(temp)     
+            
+test = 0
 
-nummer = (1,2)
+test = basicinput("a", "Geben Sie eine Zahl ein. ")
 
-
-test = testclass(nummer[0],nummer[1])
-
-
-
+print(test)
+print(type(test))
 
 
 """

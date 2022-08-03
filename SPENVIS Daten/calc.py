@@ -9,31 +9,13 @@ Rechnungen
 from tabulate import tabulate
 import matplotlib.pyplot as plt
 import numpy as np
-from source import metadata, dataset, usercheck, import_data, plot_this, usersurvey, input_var #import Functions
+from source import usercheck, import_data, plot_this, usersurvey #import Functions
+from classes import *
 
 import sys
 
 from numpy import pi, sqrt, arctan, arccos
 
-
-class calc_var:
-    def __init__(self, input_vars):
-        self.w = input_vars.dimensions[0]
-        self.l = input_vars.dimensions[1]
-        self.h = input_vars.dimensions[2]
-        self.L_min = input_vars.L_min * 10**3 # convert to [Mev*cm^2*g^-1]
-        self.steps = input_vars.steps
-        self.sVol_count = input_vars.sVol_count
-        self.e = 1.602*(10**-7) #[pC] elementary charge 
-        self.X = input_vars.X * (10**-6) # convert to [MeV]
-        self.L_max = 1.05*(10**5) # highest LET any stopping ion can deliver [MeV*cm^2*g^-1]
-        self.p_max = sqrt(self.w**2+self.l**2+self.h**2) #largest diameter of the sensitive volume [g/cm^2]
-        self.Q_c = (self.e*self.L_min*self.p_max)/(self.X) #minimum charge for Upset [pC]
-        self.S_min = self.Q_c/0.28
-        self.A_p = 0.5*(self.w*self.h+self.w*self.l+self.h*self.l) #Average projected Area of sensitive Volume [μm^2]
-        self.A = self.A_p * 4 *10**-12 #[m^2] surface area of sensitive volume
-        self.p_Lmin = (self.X/self.e)*self.Q_c/(self.L_min)
-        self.scale = input_vars.scale
 
 
 #%% differential path length
@@ -137,17 +119,12 @@ def adamsint(L, difpl, LET, p_L):
     
     return integrant
     
-def upsetrate(inputs, LET_data, LET_meta, plotdata):
-    
-    var = calc_var(inputs)     
+def upsetrate(var, LET_data, LET_meta, plotdata):
 
     lbound = 0
+    
     rbound = var.p_Lmin
  
-    if (var.L_min > var.L_max): print("ERROR: Could not Compute! (L_min > L_Max)\nExiting Program..."); sys.exit()
-
-    usercheck(var, LET_data)
-
     if plotdata == True: plot_this(LET_meta,LET_data)
 
     (difmeta, difdata) = difpld(lbound, rbound, var.steps, var.w, var.l, var.h)
@@ -238,7 +215,7 @@ def upsetrate(inputs, LET_data, LET_meta, plotdata):
         chance = chance + err_prob[k]
     print(f'Chance of {round(mue)} ± {round(mue-curvex[0])} Errors per Chip per Year: {round(chance,3)}%')
     
-    if True:
+    if plotdata == True:
         plt.figure(figsize=(10,8))
         plt.plot(curvex, err_prob, color='b')
         plt.suptitle(f'Probability Distribution of Errors per Chip ({var.sVol_count} Transistors) per Year \n μ={round(mue,2)}; σ={round(sigma,2)}\nLmin = {var.L_min}')
@@ -248,4 +225,4 @@ def upsetrate(inputs, LET_data, LET_meta, plotdata):
         
         plt.show()
     
-
+    return U
