@@ -13,7 +13,7 @@ class calc_var:
         self.w = input_vars.dimensions[0]
         self.l = input_vars.dimensions[1]
         self.h = input_vars.dimensions[2]
-        self.L_min = input_vars.L_min * 10**3 # convert to [Mev*cm^2*g^-1]
+        self.L_min = input_vars.L_min # convert to [Mev*cm^2*g^-1]
         self.steps = input_vars.steps
         self.sVol_count = input_vars.sVol_count
         self.e = 1.602*(10**-7) #[pC] elementary charge 
@@ -21,23 +21,24 @@ class calc_var:
         self.L_max = 1.05*(10**5) # highest LET any stopping ion can deliver [MeV*cm^2*g^-1]
         self.p_max = sqrt(self.w**2+self.l**2+self.h**2) #largest diameter of the sensitive volume [g/cm^2]
         self.Q_c = (self.e*self.L_min*self.p_max)/(self.X) #minimum charge for Upset [pC]
-        self.S_min = self.Q_c/0.28
         self.A_p = 0.5*(self.w*self.h+self.w*self.l+self.h*self.l) #Average projected Area of sensitive Volume [μm^2]
         self.A = self.A_p * 4 *10**-12 #[m^2] surface area of sensitive volume
         self.p_Lmin = (self.X/self.e)*self.Q_c/(self.L_min)
         self.scale = input_vars.scale
+        self.plot = input_vars.plot
 
 
 #%% Classes
 
 class input_var:
-    def __init__(self, dimensions, X, L_min, steps, sVol_count, scale):
+    def __init__(self, dimensions, X, L_min, steps, sVol_count, scale, plot):
         self.dimensions = dimensions
         self.X = X
         self.L_min = L_min
         self.steps = steps
         self.sVol_count = sVol_count
         self.scale = scale
+        self.plot = plot
 
 class metadata:
     def __init__(self, dataStart = [], lines = [], rows = [],  number = []):

@@ -18,24 +18,41 @@ import csv
 #from numpy import pi, sqrt, arctan, arccos
 
 
+
 #%% Functions
+
+def output_variables(v):
+    outputview = [["e",     v.e,    "pC",            "Elementary Charge"],
+                  ["X",     v.X,    "MeV",           "Energy needed to create one electron-hole pair (3.6 eV in Si, 4.8 eV in GaAs)"],
+                  ["L_max", v.L_max,"MeV*cm^2*g^-1", "highest LET any stopping ion can deliver"],
+                  ["p_max", v.p_max,"g/cm^2",        "largest diameter of the sensitive Volume"],
+                  ["Q_c",   v.Q_c,  "pC",            "minimum charge for Upset"],     
+                  ["A_p",   v.A_p,  "μm^2",          "Average projected Area of sensitive Volume"],
+                  ["A",     v.A,    "m^2",           "surface area of sensitive volume"],
+                  ["p_Lmin",v.p_Lmin,"g/cm^2",       "path length of minimum LET"],
+                 ]
+
+    print(tabulate(outputview, headers=["Variable","Value","Unit","Description"])) 
+    print("\n")
+
 
 def usercheck(v):
     loop = True
-    while loop == True:
+    while loop:
         print("\nCheck before calculating:\n")
     
-        inputview = [["(1)","w,l,h", f'{v.w}, {v.l}, {v.h}' ,"μm"],
+        inputview = [["(1)","w,l,h", f'{v.dimensions[0]}, {v.dimensions[1]}, {v.dimensions[2]}' ,"μm"],
                      ["(2)","L_min", v.L_min, "MeV*cm^2*g^-1"],
                      ["(3)","Steps", "{:.2e}".format(v.steps), " - "],
-                     ["","Predicted Stepsize", abs(v.L_max-v.L_min)/v.steps, "-" ],
+                     ["","Predicted Stepsize", abs(1.05*(10**5)-v.L_min)/v.steps, "MeV*cm^2*g^-1" ],
                      ["(4)","Number of Transistors", "{:.2e}".format(v.sVol_count), " - "],
-                     ["(5)", "Scale of the Calculation Axis", v.scale, " - "],
-                     ["(6)", "EXIT Program", " "]]
+                     ["(5)", "Electron hole Energy", v.X, "eV"],
+                     ["(6)", "Scale of the Calculation Axis", v.scale, " - "],
+                     ["(7)", "Plot every Step", v.plot, " - "]]
     
         print(tabulate(inputview, headers=["","Name","Value","Unit"])) 
         
-        print("\nChange a Variable by Entering the corresponding Number.\nOr press Enter to Continute")
+        print("\nChange a Variable by Entering the corresponding Number or type exit.\nOr press Enter to Continue",end='\r')
         
         while True:
             
@@ -47,23 +64,27 @@ def usercheck(v):
                 choice = int(choice)
                 
                 if choice == 1: 
-                                v.w = basicinput(1., "Please enter a new value for w:")
-                                v.l = basicinput(1., "Please enter a new value for l:")
-                                v.h = basicinput(1., "Please enter a new value for h:") ; break
+                                v.dimensions = (basicinput(1., "Please enter a new value for w:"),\
+                                                basicinput(1., "Please enter a new value for l:"),\
+                                                basicinput(1., "Please enter a new value for h:")); break
                 if choice == 2: 
-                                v.L_min = basicinput(1., "Please enter a new value for L_min:")
-                                if (v.L_min < v.L_max): break
-                                else: print("ERROR: Could not Compute! (L_min > L_Max)\nExiting Program..."); sys.exit()
+                                temp = basicinput(1., "Please enter a new value for L_min:")
+                                if (temp < (1.05*(10**5))): v.L_min = temp; break
+                                else: print("ERROR: Could not Compute! (L_min > L_Max)");break
                 if choice == 3: v.steps = basicinput(1, "Please enter a new value for steps:") ; break
                 if choice == 4: v.sVol_count = basicinput(1, "Please enter a new value for the number of sensitive Volumes:") ; break
-                if choice == 5: v.scale = basicinput("string", "Please enter a new Scale (lin/log):") ; break
+                if choice == 5: v.X = basicinput(1., "Please enter a new value for X (3.6 eV in Si, 4.8 eV in GaAs):");break
                 if choice == 6: 
-                                print("Exiting Program...")
-                                sys.exit()
-            
+                                if (v.scale == 'log'): v.scale = "lin"; break
+                                else: v.scale = 'log'; break
+                if choice == 7: v.plot = not(v.plot); break
+                              
+        
                 else: print("Incorrect Input. Please try again.")
             
-            except: print("Incorrect Input. Please try again.")
+            except: 
+                    if (choice =='exit'): sys.exit();
+                    print("Incorrect Input. Please try again.")
     
     return(v)
 

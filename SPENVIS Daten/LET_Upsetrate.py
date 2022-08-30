@@ -39,7 +39,7 @@ Functions Used:
 from classes import input_var
 
 #import matplotlib.pyplot as plt
-from source import usercheck, import_data, usersurvey, calc_var #import Functions
+from source import output_variables, usercheck, import_data, usersurvey, calc_var #import Functions
 from calc import upsetrate
 #import sys
 
@@ -51,19 +51,15 @@ chosenDB = usersurvey(database) # Read and present data from Database to choose 
 
 print(f'\nLET Data used: {LET_data.name} in {LET_data.segment}')
 
-inputs = input_var((20,10,5), 3.6, 10, 1000, 10**6, 'lin')      #Default input variables
+inputs = input_var((20,10,5), 3.6, 10000, 1000, 10**6, 'log', False)      #Default input variables
+
+variables = usercheck(inputs) # Function to check variables and change settings
 
 variables = calc_var(inputs)    # Completes the list of Varibles based on Input
 
-variables = usercheck(variables) # Function to check variables and change settings
+output_variables(variables)     # Outputs calculated Variables
 
-
-
-temp = int(input("Do you want to plot the data step by step? (1/0)"))
-plotdata = True if temp == 1 else False
-
-
-U = upsetrate(variables , LET_data, LET_meta, plotdata)
+U = upsetrate(variables , LET_data, LET_meta)
 
 
 

@@ -119,17 +119,17 @@ def adamsint(L, difpl, LET, p_L):
     
     return integrant
     
-def upsetrate(var, LET_data, LET_meta, plotdata):
+def upsetrate(var, LET_data, LET_meta):
 
     lbound = 0
     
     rbound = var.p_Lmin
  
-    if plotdata == True: plot_this(LET_meta,LET_data)
+    if var.plot: plot_this(LET_meta,LET_data)
 
     (difmeta, difdata) = difpld(lbound, rbound, var.steps, var.w, var.l, var.h)
     
-    if plotdata == True: plot_this(difmeta, difdata)
+    if var.plot: plot_this(difmeta, difdata)
     
     #%%  Differential Path length distribution
    
@@ -141,7 +141,8 @@ def upsetrate(var, LET_data, LET_meta, plotdata):
     if (not(('lin') in var.scale) and not (('log') in var.scale)): print("ERROR!\nPlease enter scale 'lin' or 'log'.\nExiting Program now..."); sys.exit()
     
     p_Lscale=[]
-   
+    
+    
     for i in range(var.steps):
         L = scale[i]
        
@@ -154,7 +155,7 @@ def upsetrate(var, LET_data, LET_meta, plotdata):
     print("")
    
     
-    if plotdata == True:
+    if var.plot:
         plt.figure(figsize=(10,8))
         plt.suptitle(f'Function to be Integrated \n Number of Iterations: {var.steps}; Stepsize: {abs(var.L_max-var.L_min)/var.steps}')
         plt.plot(func_x,func_y)
@@ -196,8 +197,8 @@ def upsetrate(var, LET_data, LET_meta, plotdata):
     
     if ((n*U*(1-U))<= 9): 
         print("\nProbability U is too low! Gaussian probability distribution will not give a reasonable result.")
-        print(f'Most likely outcome μ={mue} [Errors per day].\nTry lowering L_min or increasing transistor count.\n\nThe program will exit now.'); sys.exit()
-        print(f'Most likely outcome μ={mue*365} [Errors per year].')
+        print(f'Most likely outcome μ={mue} [Errors per year].\nTry lowering L_min or increasing transistor count.\n\nThe program will exit now.'); sys.exit()
+        
     curvex = range(round(mue-(mue*(2*sigma/mue))), round(mue+(mue*(2*sigma/mue))))
     
     
@@ -215,7 +216,7 @@ def upsetrate(var, LET_data, LET_meta, plotdata):
         chance = chance + err_prob[k]
     print(f'Chance of {round(mue)} ± {round(mue-curvex[0])} Errors per Chip per Year: {round(chance,3)}%')
     
-    if plotdata == True:
+    if var.plot:
         plt.figure(figsize=(10,8))
         plt.plot(curvex, err_prob, color='b')
         plt.suptitle(f'Probability Distribution of Errors per Chip ({var.sVol_count} Transistors) per Year \n μ={round(mue,2)}; σ={round(sigma,2)}\nLmin = {var.L_min}')
