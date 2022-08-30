@@ -51,7 +51,7 @@ chosenDB = usersurvey(database) # Read and present data from Database to choose 
 
 print(f'\nLET Data used: {LET_data.name} in {LET_data.segment}')
 
-inputs = input_var((20,10,5), 3.6, 10, 1000, 10**6, 'log')      #Default input variables
+inputs = input_var((20,10,5), 3.6, 10, 1000, 10**6, 'lin')      #Default input variables
 
 variables = calc_var(inputs)    # Completes the list of Varibles based on Input
 

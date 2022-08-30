@@ -185,7 +185,7 @@ def upsetrate(var, LET_data, LET_meta, plotdata):
     err_prob = []
     
     s_to_d = 60*60*24
-    d_to_y = 265
+    d_to_y = 265.2425
     
     
     n = var.sVol_count * s_to_d * d_to_y

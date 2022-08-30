@@ -56,7 +56,7 @@ def usercheck(v):
                                 else: print("ERROR: Could not Compute! (L_min > L_Max)\nExiting Program..."); sys.exit()
                 if choice == 3: v.steps = basicinput(1, "Please enter a new value for steps:") ; break
                 if choice == 4: v.sVol_count = basicinput(1, "Please enter a new value for the number of sensitive Volumes:") ; break
-                if choice == 5: v.scale = basicinput(1., "Please enter a new Scale (lin/log):") ; break
+                if choice == 5: v.scale = basicinput("string", "Please enter a new Scale (lin/log):") ; break
                 if choice == 6: 
                                 print("Exiting Program...")
                                 sys.exit()
