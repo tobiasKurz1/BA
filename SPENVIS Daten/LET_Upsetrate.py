@@ -60,13 +60,16 @@ print(f'\nLET Data used: {LET_data.name} in {LET_data.segment}')
 
 inputs = input_var(dimensions, X, L_min, steps, transistorcnt, axis_scale, plot_graphs)      #Default input variables
 
-variables = usercheck(inputs) # Function to check variables and change settings
+while True:
 
-variables = calc_var(inputs)    # Completes the list of Varibles based on Input
+    variables = usercheck(inputs) # Function to check variables and change settings
 
-output_variables(variables)     # Outputs calculated Variables
+    variables = calc_var(inputs)    # Completes the list of Varibles based on Input
 
-U = upsetrate(variables , LET_data, LET_meta) # Calculates Upsetrate
+    output_variables(variables)     # Outputs calculated Variables
 
+    U = upsetrate(variables , LET_data, LET_meta) # Calculates Upsetrate
+
+    print("\n##################################################################################################")
 
 
