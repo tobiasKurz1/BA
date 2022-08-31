@@ -6,14 +6,11 @@ Rechnungen
 
 @author: Tobias Kurz
 """
-from tabulate import tabulate
 import matplotlib.pyplot as plt
 import numpy as np
-from source import usercheck, import_data, plot_this, usersurvey #import Functions
-from classes import *
-
+from source import plot_this #import Functions
+from classes import metadata, dataset
 import sys
-
 from numpy import pi, sqrt, arctan, arccos
 
 
@@ -196,6 +193,7 @@ def upsetrate(var, LET_data, LET_meta):
     sigma = sqrt(n*U*(1-U))
     
     if ((n*U*(1-U))<= 9): 
+        
         print("\nProbability U is too low! Gaussian probability distribution will not give a reasonable result.")
         print(f'Most likely outcome μ={mue} [Errors per year].\nTry lowering L_min or increasing transistor count.\n\nThe program will exit now.'); sys.exit()
         

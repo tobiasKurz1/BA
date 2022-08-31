@@ -7,16 +7,12 @@ Created on Thu Jun 30 13:49:03 2022
 Funktionen
 
 """
-from classes import *
+from classes import metadata, dataset
 from tabulate import tabulate
 import sys
 import matplotlib.pyplot as plt
-#import numpy as np
 import colorsys
 import csv
-
-#from numpy import pi, sqrt, arctan, arccos
-
 
 
 #%% Functions
@@ -41,16 +37,17 @@ def usercheck(v):
     while loop:
         print("\nCheck before calculating:\n")
     
-        inputview = [["(1)","w,l,h", f'{v.dimensions[0]}, {v.dimensions[1]}, {v.dimensions[2]}' ,"μm"],
-                     ["(2)","L_min", v.L_min, "MeV*cm^2*g^-1"],
-                     ["(3)","Steps", "{:.2e}".format(v.steps), " - "],
-                     ["","Predicted Stepsize", abs(1.05*(10**5)-v.L_min)/v.steps, "MeV*cm^2*g^-1" ],
-                     ["(4)","Number of Transistors", "{:.2e}".format(v.sVol_count), " - "],
-                     ["(5)", "Electron hole Energy", v.X, "eV"],
-                     ["(6)", "Scale of the Calculation Axis", v.scale, " - "],
-                     ["(7)", "Plot every Step", v.plot, " - "]]
+        inputview = [["(1)", "w,l,h",            f'{v.dimensions[0]},{v.dimensions[1]},{v.dimensions[2]}', "μm", "Dimensions of the Sensitive Volume"],
+                     ["(2)", "L_min",              v.L_min,                            "MeV*cm^2*g^-1", "Minimum LET for an upset through largest diameter"],
+                     ["",    "L_range",            round(1.05*(10**5)-v.L_min,2),      "MeV*cm^2*g^-1", "Range from L_min to L_max"],
+                     ["(3)", "Steps",              "{:.2e}".format(v.steps),           " - ",           "Number of iteration Steps"],
+                     ["",    "Avrg_Step",          abs(1.05*(10**5)-v.L_min)/v.steps,  "MeV*cm^2*g^-1", "Predicted average Stepsize"],
+                     ["(4)", "Transistorcnt",      "{:.2e}".format(v.sVol_count),      " - ",           "Number of Sensitive Volumes/Transistors"],
+                     ["(5)", "X",                  v.X,                                "eV",            "Energy needed to create one electron-hole pair (Si: 3.6 eV; GaAs: 4.8 eV)"],
+                     ["(6)", "Axis_scale",         v.scale,                            " - ",           "Scale of the Calculation Axis (log/lin)"],
+                     ["(7)", "Plot_graphs",        v.plot,                             "bool",          "Turn Graph Plotting on or off (calculation time)"]]
     
-        print(tabulate(inputview, headers=["","Name","Value","Unit"])) 
+        print(tabulate(inputview, headers=["","Variable","Value","Unit","Description"])) 
         
         print("\nChange a Variable by Entering the corresponding Number or type exit.\nOr press Enter to Continue",end='\r')
         
@@ -145,15 +142,22 @@ def usersurvey(database):
     return chosenDB
 
     
-# Returns 1 if beginning of a new Block is found
+
+#%% SPENVIS Data handling
+
+
 def block_starts(ls):
+    # Returns 1 if beginning of a new Block is found
+    
     if ("'*'") in ls:
         return(1)
     else:
         return(0)
 
-# Returns 1 if end of a Block is found
+
 def block_ends(ls):
+    # Returns 1 if end of a Block is found
+    
     if ("'End of Block'") in ls:
         return(1)
     if ("'End of File'") in ls:
@@ -161,13 +165,16 @@ def block_ends(ls):
     else:
         return (0)
     
-# Uses first Line of every Block to fill metadata about following data
+
 def get_meta(row):
+    # Uses first Line of every Block to fill metadata about following data
+    
     newMeta = metadata(int(row[1]), int(row[7]), int(row[6]), int(row[8]))
     return newMeta
     
-# Fills dataset class with data from current Block
+
 def get_data(meta, block):
+    # Fills dataset class with data from current Block
     
     labels = meta.rows
     if meta.rows > 3: labels = 3 #Different approaches for different Data Structures
@@ -221,8 +228,10 @@ def get_data(meta, block):
             
     return data
 
-# Cleans up text from SPENVIS file for visualisation in Graph
+
 def cleanup_text(meta, data):
+    # Cleans up text from SPENVIS file for visualisation in Graph
+    
     data.name = data.name.replace("'","")
     data.segment = data.segment.replace("'","")
     data.xunit = data.xunit.replace("'","")
@@ -243,8 +252,11 @@ def cleanup_text(meta, data):
         data.y2unit = data.y2unit.replace("!u","^")
         data.y2unit = data.y2unit.replace("!n","") 
 
-# Imports Data from SPENVIS FILE while using other functions from the source.py file
+
+
 def import_data(file, delimiter):
+    # Imports Data from SPENVIS FILE while using other functions from the source.py file
+    
     line = 0                             
     database = []
     metabase = []
@@ -275,9 +287,9 @@ def import_data(file, delimiter):
     return metabase, database
 
 
-# Plots different types of data from SPENVIS. Data has so be in meta/data structure format.
-# All data form spenvis_nlof_srimsi.txt and spenvis_nlol_srimsi.txt can be plotted
 def plot_this(meta, data):  
+    # Plots different types of data from SPENVIS. Data has so be in meta/data structure format.
+    # All data form spenvis_nlof_srimsi.txt and spenvis_nlol_srimsi.txt can be plotted
     
     print(f'plotting {data.name} from segment {data.segment}...')
     

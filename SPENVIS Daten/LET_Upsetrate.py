@@ -32,26 +32,33 @@ Functions Used:
     adamsint    : Computes the function, which is later to be integrated for the final calculation
     
 """
-#from tabulate import tabulate
-#import matplotlib.pyplot as plt
-#import numpy as np
-#from numpy import pi, sqrt
-from classes import input_var
-
-#import matplotlib.pyplot as plt
-from source import output_variables, usercheck, import_data, usersurvey, calc_var #import Functions
+from classes import input_var, calc_var
+from source import output_variables, usercheck, import_data, usersurvey #import Functions
 from calc import upsetrate
-#import sys
 
+
+#%% Input variables
+
+file_name        = 'spenvis_nlof_srimsi.txt'
+dimensions       = (20,10,5)
+X                = 3.6
+L_min            = 10000
+steps            = 1000
+transistorcnt    = 10**6
+axis_scale       = 'log'
+plot_graphs      = False
+
+
+#%%
 
     
-(metabase, database)=import_data('spenvis_nlof_srimsi.txt',',') # SPENVIS Data
+(metabase, database)=import_data(file_name,',') # SPENVIS Data
 chosenDB = usersurvey(database) # Read and present data from Database to choose from
 (LET_meta, LET_data) = (metabase[chosenDB], database[chosenDB]) # apply chosen Data
 
 print(f'\nLET Data used: {LET_data.name} in {LET_data.segment}')
 
-inputs = input_var((20,10,5), 3.6, 10000, 1000, 10**6, 'log', False)      #Default input variables
+inputs = input_var(dimensions, X, L_min, steps, transistorcnt, axis_scale, plot_graphs)      #Default input variables
 
 variables = usercheck(inputs) # Function to check variables and change settings
 
@@ -59,7 +66,7 @@ variables = calc_var(inputs)    # Completes the list of Varibles based on Input
 
 output_variables(variables)     # Outputs calculated Variables
 
-U = upsetrate(variables , LET_data, LET_meta)
+U = upsetrate(variables , LET_data, LET_meta) # Calculates Upsetrate
 
 
 
