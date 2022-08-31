@@ -33,7 +33,7 @@ Functions Used:
     
 """
 from classes import input_var, calc_var
-from source import output_variables, usercheck, import_data, usersurvey #import Functions
+from source import output_variables, usercheck, import_data, usersurvey,plot_this #import Functions
 from calc import upsetrate
 
 
@@ -53,14 +53,14 @@ plot_graphs      = False
 
     
 (metabase, database)=import_data(file_name,',') # SPENVIS Data
-chosenDB = usersurvey(database) # Read and present data from Database to choose from
-(LET_meta, LET_data) = (metabase[chosenDB], database[chosenDB]) # apply chosen Data
 
-print(f'\nLET Data used: {LET_data.name} in {LET_data.segment}')
+(LET_meta, LET_data) = usersurvey(metabase, database) # Read and present data from Database to choose from
 
 inputs = input_var(dimensions, X, L_min, steps, transistorcnt, axis_scale, plot_graphs)      #Default input variables
 
 while True:
+
+    print(f'\n\n#################### {LET_data.segment}: {LET_data.name} ####################')    
 
     variables = usercheck(inputs) # Function to check variables and change settings
 
@@ -70,6 +70,5 @@ while True:
 
     U = upsetrate(variables , LET_data, LET_meta) # Calculates Upsetrate
 
-    print("\n##################################################################################################")
 
 

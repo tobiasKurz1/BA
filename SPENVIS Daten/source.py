@@ -35,7 +35,7 @@ def output_variables(v):
 def usercheck(v):
     loop = True
     while loop:
-        print("\nCheck before calculating:\n")
+        print("\n")
     
         inputview = [["(1)", "w,l,h",            f'{v.dimensions[0]},{v.dimensions[1]},{v.dimensions[2]}', "μm", "Dimensions of the Sensitive Volume"],
                      ["(2)", "L_min",              v.L_min,                            "MeV*cm^2*g^-1", "Minimum LET for an upset through largest diameter"],
@@ -108,7 +108,7 @@ def basicinput(example_of_data, Text):
     return(temp) 
 
 
-def usersurvey(database):
+def usersurvey(metabase, database):
     
     # Takes a database as input and lists all the packages inside
     # User can then choose which one, also gives option to exit program
@@ -117,8 +117,8 @@ def usersurvey(database):
     print("The following Data was found:\n")
     for i in range(len(database)):
         print(f'({i}) {database[i].name} from {database[i].segment}')
-
-    print(f'({len(database)}) EXIT')
+    print(f'({len(database)}) PLOT ALL')
+    print(f'({len(database)+1}) EXIT')
     while True:
         while True:
             chosenDB = (input("Which database do you want to use?\n"))
@@ -129,17 +129,21 @@ def usersurvey(database):
                 if ('exit') in chosenDB:
                     print("Exiting Program...")
                     sys.exit()
-                else: print(f'You need to enter a Number between 0 and {len(database)}!\n')
-            
-        if chosenDB == len(database): 
+                else: print(f'You need to enter a Number between 0 and {len(database)}!')
+        if chosenDB == len(database):
+            for n in range(len(database)):
+                plot_this(metabase[n],database[n])
+        elif chosenDB == len(database)+1: 
             print("Exiting Program...")
             sys.exit()
-        if chosenDB > len(database):
-            print("Number too high! Try again or Exit with 'exit'\n")
-        elif not('LET') in database[chosenDB].name:  
-            print("No LET Data found. Please choose again!\n ")
-        else: break
-    return chosenDB
+        elif chosenDB > len(database)+1:
+            print("Number too high! Try again or Exit with 'exit'")
+        else: 
+            if not('LET') in database[chosenDB].name:  
+                print("Warning: No LET Data found in selected Data! You may crash the program.\n ")
+            break
+    
+    return metabase[chosenDB], database[chosenDB]
 
     
 
@@ -281,8 +285,11 @@ def import_data(file, delimiter):
                 cleanup_text(meta, data)
                 database.append(data)
                 
+                
     metabase.reverse() #allign metabase with plot counting
     database.reverse() #allign database with plot counting
+    
+    
     
     return metabase, database
 
@@ -374,4 +381,3 @@ def plot_this(meta, data):
     
     
     plt.show()
-    print(" Done!")
