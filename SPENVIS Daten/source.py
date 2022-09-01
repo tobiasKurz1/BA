@@ -41,8 +41,8 @@ def usercheck(v):
                      ["(2)", "L_min",              v.L_min,                            "MeV*cm^2*g^-1", "Minimum LET for an upset through largest diameter"],
                      ["",    "L_range",            round(1.05*(10**5)-v.L_min,2),      "MeV*cm^2*g^-1", "Range from L_min to L_max"],
                      ["(3)", "Steps",              "{:.2e}".format(v.steps),           " - ",           "Number of iteration Steps"],
-                     ["",    "Avrg_Step",          abs(1.05*(10**5)-v.L_min)/v.steps,  "MeV*cm^2*g^-1", "Predicted average Stepsize"],
-                     ["(4)", "Transistorcnt",      "{:.2e}".format(v.sVol_count),      " - ",           "Number of Sensitive Volumes/Transistors"],
+                     ["",    "Average_Step",          abs(1.05*(10**5)-v.L_min)/v.steps,  "MeV*cm^2*g^-1", "Predicted average Stepsize"],
+                     ["(4)", "Transistorcount",      "{:.2e}".format(v.sVol_count),      " - ",           "Number of Sensitive Volumes/Transistors"],
                      ["(5)", "X",                  v.X,                                "eV",            "Energy needed to create one electron-hole pair (Si: 3.6 eV; GaAs: 4.8 eV)"],
                      ["(6)", "Axis_scale",         v.scale,                            " - ",           "Scale of the Calculation Axis (log/lin)"],
                      ["(7)", "Plot_graphs",        v.plot,                             "bool",          "Turn Graph Plotting on or off (calculation time)"]]

@@ -11,29 +11,30 @@ The output Upset Rate is translated into a probability distribution using a gaus
 
 
 Imputs are:
-    (w,l,h)     : Dimensions of the sensitive Volume [μm]
-    L_min       : Required minimum LET for an Upset with p_max (largest path through the SV) [MeV*cm^2*g^-1]
-    - alternatively the code can easily be reprogrammed to use Q_c as a dimensioning factor instead of L_min - 
-    X           : Energy needed to create ine electron-hole pair (3.6 eV in SI; 4.8 eV in GaAs) [eV]
-    LET_data    : Integral LET spectrum at the specific mission or mission Segment, derived from SPENVIS file "spenvis_nlof_srimsi.txt".
-    steps       : Number of steps for the difpld and integration (for accurate results at >100.000 is advised)
-    sVol_count  : Number of Transistors per Chip (used for probability calculations)
+    dimensions    : w,l,h Dimensions of the sensitive Volume [μm]
+    L_min         : Required minimum LET for an Upset with p_max (largest path through the SV) [MeV*cm^2*g^-1]
+    X             : Energy needed to create ine electron-hole pair (3.6 eV in SI; 4.8 eV in GaAs) [eV]
+    file_name     : Name of the SPENVIS File  which contains the Integral LET spectrum at the specific mission or mission Segment (default file name is "spenvis_nlof_srimsi.txt")
+    steps         : Number of steps for the difpld and integration (for accurate results at >100.000 is advised)
+    transistorcnt : Number of Transistors per Chip (used for probability calculations)
+    axis_scale    : Can either be 'lin' or 'log', log tends to give more precise results more quickly
+    Plot_graphs   : Boolean to plot the results step by step
 
 Outputs are:
-    Graphic     : differential and integral LET spectra (SPENVIS Data)
-    Graphic     : Differental path length distribution (difpld) of the SV
-    Graphic     : Probability distribution of Errors per Day per Chip
-    U           : Upset Rate in events per bit per second
+    Graphic       : differential and integral LET spectra (SPENVIS Data)
+    Graphic       : Differental path length distribution (difpld) of the SV
+    Graphic       : Probability distribution of Errors per Day per Chip
+    U             : Upset Rate in events per bit per second
     
 Functions Used:
-    import_data : Importing and Sorting data from SPENVIS standard text output
-    plot_this   : Plots data from import_data format
-    difpld      : Generates difpld diagramm based on SV and range
-    adamsint    : Computes the function, which is later to be integrated for the final calculation
+    import_data   : Importing and Sorting data from SPENVIS standard text output
+    plot_this     : Plots data from import_data format
+    difpld        : Generates difpld diagramm based on SV and range
+    adamsint      : Computes the function, which is later to be integrated for the final calculation
     
 """
 from classes import input_var, calc_var
-from source import output_variables, usercheck, import_data, usersurvey,plot_this #import Functions
+from source import output_variables, usercheck, import_data, usersurvey #import Functions
 from calc import upsetrate
 
 

@@ -195,7 +195,7 @@ def upsetrate(var, LET_data, LET_meta):
     if ((n*U*(1-U))<= 9): 
         
         print("\nProbability U is too low! Gaussian probability distribution will not give a reasonable result.")
-        print(f'Most likely outcome μ={mue} [Errors per year].\nTry lowering L_min or increasing transistor count.\n\nThe program will exit now.'); sys.exit()
+        print(f'Most likely outcome μ={mue} [Errors per year].\nTry lowering L_min or increasing transistor count.\n')
         
     curvex = range(round(mue-(mue*(2*sigma/mue))), round(mue+(mue*(2*sigma/mue))))
     
@@ -212,7 +212,7 @@ def upsetrate(var, LET_data, LET_meta):
     
     for k in range(len(curvex)):
         chance = chance + err_prob[k]
-    print(f'Chance of {round(mue)} ± {round(mue-curvex[0])} Errors per Chip per Year: {round(chance,3)}%')
+    print(f'Chance of {round(mue)} ± {round(mue-curvex[0])} faulty Transistors per Year: {round(chance,3)}%')
     
     if var.plot:
         plt.figure(figsize=(10,8))
