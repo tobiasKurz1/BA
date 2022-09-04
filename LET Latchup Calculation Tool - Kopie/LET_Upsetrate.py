@@ -38,7 +38,7 @@ from source import output_variables, usercheck, import_data, usersurvey #import 
 from calc import upsetrate
 
 
-#%% Default Input variables
+#%% Input variables
 
 file_name        = 'spenvis_nlof_srimsi.txt'
 dimensions       = (20,10,5)
@@ -47,7 +47,6 @@ L_min            = 10000
 steps            = 1000
 transistorcnt    = 10**6
 axis_scale       = 'log'
-sat_xsection     = 10**-9
 plot_graphs      = False
 
 
@@ -56,13 +55,13 @@ plot_graphs      = False
     
 (metabase, database)=import_data(file_name,',') # SPENVIS Data
 
-(LET_meta, LET_data, Proton_meta, Proton_data) = usersurvey(metabase, database) # Read and present data from Database to choose from
+(LET_meta, LET_data) = usersurvey(metabase, database) # Read and present data from Database to choose from
 
-inputs = input_var(dimensions, X, L_min, steps, transistorcnt, axis_scale, plot_graphs, sat_xsection)      #Default input variables
+inputs = input_var(dimensions, X, L_min, steps, transistorcnt, axis_scale, plot_graphs)      #Default input variables
 
 while True:
 
-    print(f'\n\n#################### {LET_data.segment} ####################')    
+    print(f'\n\n#################### {LET_data.segment}: {LET_data.name} ####################')    
 
     variables = usercheck(inputs) # Function to check variables and change settings
 
@@ -70,7 +69,7 @@ while True:
 
     output_variables(variables)     # Outputs calculated Variables
 
-    U = upsetrate(variables , LET_data, LET_meta, Proton_data, Proton_meta) # Calculates Upsetrate
+    U = upsetrate(variables , LET_data, LET_meta) # Calculates Upsetrate
 
 
 

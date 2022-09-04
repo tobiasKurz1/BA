@@ -26,13 +26,12 @@ class calc_var:
         self.p_Lmin = (self.X/self.e)*self.Q_c/(self.L_min)
         self.scale = input_vars.scale
         self.plot = input_vars.plot
-        self.xsection = input_vars.xsection
 
 
 #%% Classes
 
 class input_var:
-    def __init__(self, dimensions, X, L_min, steps, sVol_count, scale, plot, xsection):
+    def __init__(self, dimensions, X, L_min, steps, sVol_count, scale, plot):
         self.dimensions = dimensions
         self.X = X
         self.L_min = L_min
@@ -40,7 +39,6 @@ class input_var:
         self.sVol_count = sVol_count
         self.scale = scale
         self.plot = plot
-        self.xsection = xsection
 
 class metadata:
     def __init__(self, dataStart = [], lines = [], rows = [],  number = []):

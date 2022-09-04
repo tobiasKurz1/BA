@@ -44,9 +44,8 @@ def usercheck(v):
                      ["",    "Average_Step",          abs(1.05*(10**5)-v.L_min)/v.steps,  "MeV*cm^2*g^-1", "Predicted average Stepsize"],
                      ["(4)", "Transistorcount",      "{:.2e}".format(v.sVol_count),      " - ",           "Number of Sensitive Volumes/Transistors"],
                      ["(5)", "X",                  v.X,                                "eV",            "Energy needed to create one electron-hole pair (Si: 3.6 eV; GaAs: 4.8 eV)"],
-                     ["(6)", "Saturation Crosssection", v.xsection,                    "cm^2/bit",      "Saturation Cross section of the Device (put 0 to turn off nuclear proton reaction influence)"],
-                     ["(7)", "Axis_scale",         v.scale,                            " - ",           "Scale of the Calculation Axis (log/lin)"],
-                     ["(8)", "Plot_graphs",        v.plot,                             "bool",          "Turn Graph Plotting on or off (calculation time)"]]
+                     ["(6)", "Axis_scale",         v.scale,                            " - ",           "Scale of the Calculation Axis (log/lin)"],
+                     ["(7)", "Plot_graphs",        v.plot,                             "bool",          "Turn Graph Plotting on or off (calculation time)"]]
     
         print(tabulate(inputview, headers=["","Variable","Value","Unit","Description"])) 
         
@@ -72,11 +71,10 @@ def usercheck(v):
                 if choice == 3: v.steps = basicinput(1, "Please enter a new value for steps:") ; break
                 if choice == 4: v.sVol_count = basicinput(1, "Please enter a new value for the number of sensitive Volumes:") ; break
                 if choice == 5: v.X = basicinput(1., "Please enter a new value for X (3.6 eV in Si, 4.8 eV in GaAs):");break
-                if choice == 6: v.xsection = basicinput(1., "Please enter a new value for the saturation cross section:");break
-                if choice == 7: 
+                if choice == 6: 
                                 if (v.scale == 'log'): v.scale = "lin"; break
                                 else: v.scale = 'log'; break
-                if choice == 8: v.plot = not(v.plot); break
+                if choice == 7: v.plot = not(v.plot); break
                               
         
                 else: print("Incorrect Input. Please try again.")
@@ -116,17 +114,11 @@ def usersurvey(metabase, database):
     # User can then choose which one, also gives option to exit program
     # Error and fault proof
     
-    print("The following Mission segments were found:\n")
-    segment_list = [""]
+    print("The following Data was found:\n")
     for i in range(len(database)):
-        if not(segment_list[-1] == database[i].segment):
-            segment_list.append(database[i].segment) 
-            print(f'({len(segment_list)-1}) {segment_list[-1]}')
-
-    if (len(segment_list))==1:
-        print("No mission Segments were found. Make sure to enter the right file name and data type before starting program.\nExiting Program..");sys.exit()
-    print(f'({len(segment_list)}) *Plot Data ')
-    print(f'({len(segment_list)+1}) *EXIT')
+        print(f'({i}) {database[i].name} from {database[i].segment}')
+    print(f'({len(database)}) PLOT ALL')
+    print(f'({len(database)+1}) EXIT')
     while True:
         while True:
             chosenDB = (input("Which database do you want to use?\n"))
@@ -137,31 +129,21 @@ def usersurvey(metabase, database):
                 if ('exit') in chosenDB:
                     print("Exiting Program...")
                     sys.exit()
-                else: print(f'You need to enter a Number between 0 and {len(segment_list)}!')
-        if chosenDB == len(segment_list):
+                else: print(f'You need to enter a Number between 0 and {len(database)}!')
+        if chosenDB == len(database):
             for n in range(len(database)):
                 plot_this(metabase[n],database[n])
-        elif chosenDB == len(segment_list)+1: 
+        elif chosenDB == len(database)+1: 
             print("Exiting Program...")
             sys.exit()
-        elif chosenDB > len(segment_list)+1:
+        elif chosenDB > len(database)+1:
             print("Number too high! Try again or Exit with 'exit'")
         else: 
-            for i in range(len(database)):
-                if segment_list[chosenDB] == database[i].segment:
-                    if ('LET') in database[i].name:
-                        LET_meta = metabase[i]
-                        LET_data = database[i]
-                    elif ('proton') in database[i].name:
-                        Proton_meta = metabase[i]
-                        Proton_data = database[i]
-            if not('LET') in LET_data.name:  
-                print("Warning: No LET Data found in selected Data! You may crash the program.\n ")
-            if not('proton') in Proton_data.name:  
+            if not('LET') in database[chosenDB].name:  
                 print("Warning: No LET Data found in selected Data! You may crash the program.\n ")
             break
     
-    return LET_meta, LET_data, Proton_meta, Proton_data
+    return metabase[chosenDB], database[chosenDB]
 
     
 

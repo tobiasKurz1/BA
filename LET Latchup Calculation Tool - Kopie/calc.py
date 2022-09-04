@@ -102,7 +102,7 @@ def interp(x, y, xvalue):
     return yvalue
 
 
-#def nuclear_u()
+def nuclear_u()
 
 
 
@@ -120,16 +120,14 @@ def adamsint(L, difpl, LET, p_L):
     integrant = (D*F)/L**2
     
     return integrant
-#%% Upsetrate
-  
-def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
+    
+def upsetrate(var, LET_data, LET_meta):
 
     lbound = 0
     
     rbound = var.p_Lmin
  
     if var.plot: plot_this(LET_meta,LET_data)
-    if var.plot: plot_this(Proton_meta,Proton_data)
 
     (difmeta, difdata) = difpld(lbound, rbound, var.steps, var.w, var.l, var.h)
     
@@ -178,47 +176,13 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
 
     print("") 
     
-#%% Nuclear Proton reaction
-
-    U_prot = 0
-    
-    if not(var.xsection == 0):
-        
-        protint = 0
-        protplot = []
-        
-        for i in range(len(Proton_data.xaxis)):
-            if Proton_data.xaxis[i] > var.L_min:
-                protplot.append(Proton_data.y2axis[i] * var.xsection)
-            else: protplot.append(0)
-
-        if var.plot:
-            plt.figure(figsize=(10,8))
-            plt.suptitle("Nuclear Proton function (to be intregrated)")
-            plt.plot(Proton_data.xaxis,protplot)
-            plt.xscale('log')
-            plt.show()
-   
-        #Integral:
-        
-        for i in range(1,len(protplot)):
-            protint = protplot[i]*(Proton_data.xaxis[i]-Proton_data.xaxis[i-1])+protint
-        
-        
-        U_prot = (10**-4)*4*pi*protint
-    
 #%% Final Calculation 
 
-    U_LET = pi * var.A * (var.X/var.e) * var.Q_c * integral
+    U = pi * var.A * (var.X/var.e) * var.Q_c * integral
 
-    U = U_LET + U_prot
+    print(f'\nUpset Rate U = {U} [bit^-1 s^-1]')
     
 #%% Probability Calculations
-
-
-    print(f'\nUpset rate caused by proton nuclear reactions: {U_prot} [bit^-1 s^-1] ({round(U_prot*100/U,2)}%)')
-    print(f'Upset rate caused by Cosmic Rays (LET):        {U_LET} [bit^-1 s^-1] ({round(U_LET*100/U,2)}%)')
-    print(f'Total Upset Rate (Proton + LET):               {U} [bit^-1 s^-1]')
 
     eu =  2.71828182846
     err_prob = []
@@ -237,8 +201,7 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
         
         print("\nProbability U is too low! Gaussian probability distribution will not give a reasonable result.")
         print(f'Most likely outcome μ={mue} [Errors per year].\nTry lowering L_min or increasing transistor count.\n')
-        return(0)
-    
+        
     curvex = range(round(mue-(mue*(2*sigma/mue))), round(mue+(mue*(2*sigma/mue))))
     
     
@@ -254,7 +217,7 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
     
     for k in range(len(curvex)):
         chance = chance + err_prob[k]
-    print(f'\nChance of {round(mue)} ± {round(mue-curvex[0])} faulty Transistors per Year: {round(chance,3)}%')
+    print(f'Chance of {round(mue)} ± {round(mue-curvex[0])} faulty Transistors per Year: {round(chance,3)}%')
     
     if var.plot:
         plt.figure(figsize=(10,8))
