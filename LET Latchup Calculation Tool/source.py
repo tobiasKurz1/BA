@@ -45,12 +45,12 @@ def usercheck(v):
                      ["(4)", "Transistorcount",      "{:.2e}".format(v.sVol_count),      " - ",           "Number of Sensitive Volumes/Transistors"],
                      ["(5)", "X",                  v.X,                                "eV",            "Energy needed to create one electron-hole pair (Si: 3.6 eV; GaAs: 4.8 eV)"],
                      ["(6)", "Saturation Crosssection", v.xsection,                    "cm^2/bit",      "Saturation Cross section of the Device (put 0 to turn off nuclear proton reaction influence)"],
-                     ["(7)", "Axis_scale",         v.scale,                            " - ",           "Scale of the Calculation Axis (log/lin)"],
-                     ["(8)", "Plot_graphs",        v.plot,                             "bool",          "Turn Graph Plotting on or off (calculation time)"]]
+                     ["(7)", "Axis scale",         v.scale,                            " - ",           "Scale of the Calculation Axis (log/lin)"],
+                     ["(8)", "Plot graphs?",        v.plot,                             "bool",          "Turn Graph Plotting on or off (calculation time)"]]
     
         print(tabulate(inputview, headers=["","Variable","Value","Unit","Description"])) 
         
-        print("\nChange a Variable by Entering the corresponding Number or type exit.\nOr press Enter to Continue",end='\r')
+        print("\nChange a Variable by entering the corresponding number or type exit.\nOr press Enter to Continue",end='\r')
         
         while True:
             

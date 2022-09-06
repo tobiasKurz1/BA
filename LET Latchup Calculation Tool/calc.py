@@ -186,9 +186,10 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
         
         protint = 0
         protplot = []
+        L_c = var.L_min*(var.p_max/min(var.w,var.l,var.h))
         
         for i in range(len(Proton_data.xaxis)):
-            if Proton_data.xaxis[i] > var.L_min:
+            if Proton_data.xaxis[i] > L_c:
                 protplot.append(Proton_data.y2axis[i] * var.xsection)
             else: protplot.append(0)
 

@@ -40,7 +40,7 @@ from calc import upsetrate
 
 #%% Default Input variables
 
-file_name        = 'spenvis_nlof_srimsi.txt'
+file_name        = 'meo_mission.txt'
 dimensions       = (20,10,5)
 X                = 3.6
 L_min            = 10000
