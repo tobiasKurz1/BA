@@ -185,29 +185,35 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
     if not(var.xsection == 0):
         
         protint = 0
-        protplot = []
-        L_c = var.L_min*(var.p_max/min(var.w,var.l,var.h))
+        proty = []      
         
-        for i in range(len(Proton_data.xaxis)):
-            if Proton_data.xaxis[i] > L_c:
-                protplot.append(Proton_data.y2axis[i] * var.xsection)
-            else: protplot.append(0)
-
+        if ('log') in var.scale: protx = np.logspace(0, np.log10(max(Proton_data.xaxis)), var.steps, True)
+        if ('lin') in var.scale: protx = np.linspace(0, max(Proton_data.xaxis), var.steps, True)
+        
+        for i in range(len(protx)):
+            if protx[i] > var.L_c:
+                proty.append(interp(Proton_data.xaxis,Proton_data.y2axis,protx[i]) * var.xsection)
+            else: proty.append(0)
+            print(f'\rCalculating proton reaction curve {round(i*100/(var.steps))}% ...              ', end = "")
+            
         if var.plot:
             plt.figure(figsize=(10,8))
             plt.suptitle("Nuclear Proton function (to be intregrated)")
-            plt.plot(Proton_data.xaxis,protplot)
+            plt.plot(protx,proty)
             plt.xscale('log')
+            plt.yscale('log')
             plt.show()
    
         #Integral:
+            
+        for i in range(1,len(proty)):
+            protint = proty[i]*(protx[i]-protx[i-1])+protint
         
-        for i in range(1,len(protplot)):
-            protint = protplot[i]*(Proton_data.xaxis[i]-Proton_data.xaxis[i-1])+protint
         
+  #      print(f'\n L_c = {var.L_c}\n protint = {protint}\n')
         
         U_prot = (10**-4)*4*pi*protint
-    
+        
 #%% Final Calculation 
 
     U_LET = pi * var.A * (var.X/var.e) * var.Q_c * integral

@@ -27,6 +27,7 @@ class calc_var:
         self.scale = input_vars.scale
         self.plot = input_vars.plot
         self.xsection = input_vars.xsection
+        self.L_c = self.L_min*(self.p_max/min(self.w,self.l,self.h))
 
 
 #%% Classes

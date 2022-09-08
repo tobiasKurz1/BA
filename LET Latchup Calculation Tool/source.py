@@ -26,6 +26,7 @@ def output_variables(v):
                   ["A_p",   v.A_p,  "μm^2",          "Average projected Area of sensitive Volume"],
                   ["A",     v.A,    "m^2",           "surface area of sensitive volume"],
                   ["p_Lmin",v.p_Lmin,"g/cm^2",       "path length of minimum LET"],
+                  ["L_c",   v.L_c   ,"MeV*cm^2*g^-1","Minimum LET for an upset through smallest diameter"],
                  ]
 
     print(tabulate(outputview, headers=["Variable","Value","Unit","Description"])) 
@@ -46,7 +47,7 @@ def usercheck(v):
                      ["(5)", "X",                  v.X,                                "eV",            "Energy needed to create one electron-hole pair (Si: 3.6 eV; GaAs: 4.8 eV)"],
                      ["(6)", "Saturation Crosssection", v.xsection,                    "cm^2/bit",      "Saturation Cross section of the Device (put 0 to turn off nuclear proton reaction influence)"],
                      ["(7)", "Axis scale",         v.scale,                            " - ",           "Scale of the Calculation Axis (log/lin)"],
-                     ["(8)", "Plot graphs?",        v.plot,                             "bool",          "Turn Graph Plotting on or off (calculation time)"]]
+                     ["(8)", "Plot graphs?",        v.plot,                             "bool",          "Turn Graph Plotting on or off (use for debugging)"]]
     
         print(tabulate(inputview, headers=["","Variable","Value","Unit","Description"])) 
         
@@ -125,6 +126,7 @@ def usersurvey(metabase, database):
 
     if (len(segment_list))==1:
         print("No mission Segments were found. Make sure to enter the right file name and data type before starting program.\nExiting Program..");sys.exit()
+    print("------------------------------------")
     print(f'({len(segment_list)}) *Plot Data ')
     print(f'({len(segment_list)+1}) *EXIT')
     while True:
@@ -137,7 +139,7 @@ def usersurvey(metabase, database):
                 if ('exit') in chosenDB:
                     print("Exiting Program...")
                     sys.exit()
-                else: print(f'You need to enter a Number between 0 and {len(segment_list)}!')
+                else: print(f'You need to enter a Number between 0 and {len(segment_list)+1}!')
         if chosenDB == len(segment_list):
             for n in range(len(database)):
                 plot_this(metabase[n],database[n])
@@ -155,11 +157,19 @@ def usersurvey(metabase, database):
                     elif ('proton') in database[i].name:
                         Proton_meta = metabase[i]
                         Proton_data = database[i]
-            if not('LET') in LET_data.name:  
-                print("Warning: No LET Data found in selected Data! You may crash the program.\n ")
-            if not('proton') in Proton_data.name:  
-                print("Warning: No LET Data found in selected Data! You may crash the program.\n ")
-            break
+            try:    
+                LET_meta
+                try: 
+                    Proton_meta; break
+                except: 
+                    (Proton_meta, Proton_data) = ([],[])
+                    print("Warning: No proton data found in selected data! \nTurn proton nuclear reaction calculation off or else you may crash the program (Saturation Crosssection = 0).\nPlease also check your source file.\n "); break
+                        
+            except: print("Error: No LET Data found in selected Data! Calculation not possible.\n ")
+                
+                
+
+            
     
     return LET_meta, LET_data, Proton_meta, Proton_data
 
