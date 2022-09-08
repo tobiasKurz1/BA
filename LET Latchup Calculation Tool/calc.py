@@ -41,12 +41,12 @@ def difpld(lbound, rbound, steps, l, w, h):
     data = dataset()
     meta = metadata()
     
-    data.name = (f'Differential Path Length Distribution of Volume {l} x {w} x {h} micrometers')
+    data.name = (f'Differential Path Length Distribution of Volume {l} x {w} x {h} g/cm^2')
     data.xaxis = difpld_x
     data.xlabel = ('Chord Length')
-    data.xunit = ('μm')
+    data.xunit = ('g/cm^2')
     data.y1label = ('Pathlength probability per micrometer')
-    data.y1unit = ('1/μm')
+    data.y1unit = ('cm^2/g')
     data.y1axis = difpld_y
     
     meta.lines = steps
@@ -102,9 +102,6 @@ def interp(x, y, xvalue):
     return yvalue
 
 
-#def nuclear_u()
-
-
 
 
 #%% Adams Integral
@@ -126,12 +123,12 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
 
     lbound = 0
     
-    rbound = var.p_Lmin
+    rbound = var.p_max
  
     if var.plot: plot_this(LET_meta,LET_data)
     if var.plot: plot_this(Proton_meta,Proton_data)
 
-    (difmeta, difdata) = difpld(lbound, rbound, var.steps, var.w, var.l, var.h)
+    (difmeta, difdata) = difpld(lbound, rbound, var.steps, var.x, var.y, var.z)
     
     if var.plot: plot_this(difmeta, difdata)
     
@@ -191,7 +188,7 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
         if ('lin') in var.scale: protx = np.linspace(0, max(Proton_data.xaxis), var.steps, True)
         
         for i in range(len(protx)):
-            if protx[i] > var.L_c:
+            if protx[i] > var.A_t:
                 proty.append(interp(Proton_data.xaxis,Proton_data.y2axis,protx[i]) * var.xsection)
             else: proty.append(0)
             print(f'\rCalculating proton reaction curve {round(i*100/(var.steps))}% ...              ', end = "")

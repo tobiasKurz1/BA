@@ -43,11 +43,13 @@ from calc import upsetrate
 file_name        = 'shortterm.txt'
 dimensions       = (20,10,5)
 X                = 3.6
-L_min            = 10000
+rho              = 2.33
+L_min            = 10
 steps            = 1000
 transistorcnt    = 10**6
 axis_scale       = 'log'
-sat_xsection     = 10**-9
+sat_xsection     = 10 * 10**-14
+A_t              = 42
 plot_graphs      = False
 
 
@@ -58,13 +60,13 @@ plot_graphs      = False
 
 (LET_meta, LET_data, Proton_meta, Proton_data) = usersurvey(metabase, database) # Read and present data from Database to choose from
 
-inputs = input_var(dimensions, X, L_min, steps, transistorcnt, axis_scale, plot_graphs, sat_xsection)      #Default input variables
+inputs = input_var(dimensions, X, rho, L_min, steps, transistorcnt, axis_scale, plot_graphs, sat_xsection, A_t)      #Default input variables
 
 while True:
 
     print(f'\n\n#################### {LET_data.segment} ####################')    
 
-    variables = usercheck(inputs) # Function to check variables and change settings
+    inputs = usercheck(inputs)      # Function to check variables and change settings
 
     variables = calc_var(inputs)    # Completes the list of Varibles based on Input
 
