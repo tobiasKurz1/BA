@@ -40,7 +40,7 @@ from calc import upsetrate
 
 #%% Default Input variables
 
-file_name        = 'shortterm.txt'
+file_name        = 'spenvis_nlof_srimsi.txt'
 dimensions       = (20,10,5)
 X                = 3.6
 rho              = 2.33

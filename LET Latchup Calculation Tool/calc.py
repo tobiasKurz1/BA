@@ -182,21 +182,36 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
     if not(var.xsection == 0):
         
         protint = 0
-        proty = []      
+        proty = [] 
+        bendely = []
         
         if ('log') in var.scale: protx = np.logspace(0, np.log10(max(Proton_data.xaxis)), var.steps, True)
         if ('lin') in var.scale: protx = np.linspace(0, max(Proton_data.xaxis), var.steps, True)
         
+        def bendel(xsection, A, E):
+            if E>A:
+                Y = ((18/A)**0.5) * (E-A)
+            else: Y=0
+            return (xsection * (1- np.exp(-0.18 * Y**0.5))**4)
+            
+        
         for i in range(len(protx)):
-            if protx[i] > var.A_t:
-                proty.append(interp(Proton_data.xaxis,Proton_data.y2axis,protx[i]) * var.xsection)
-            else: proty.append(0)
+            
+            proty.append(interp(Proton_data.xaxis,Proton_data.y2axis,protx[i]))
+            bendely.append(bendel(var.xsection, var.A_t, protx[i]))
             print(f'\rCalculating proton reaction curve {round(i*100/(var.steps))}% ...              ', end = "")
             
         if var.plot:
             plt.figure(figsize=(10,8))
-            plt.suptitle("Nuclear Proton function (to be intregrated)")
+            plt.suptitle("Interpolated proton flux data")
             plt.plot(protx,proty)
+            plt.xscale('log')
+            plt.yscale('log')
+            plt.show()
+            
+            plt.figure(figsize=(10,8))
+            plt.suptitle(f'Bendel Function for proton-induced upset cross section\n σ_lim = {var.xsection}; A_t = {var.A_t}')
+            plt.plot(protx,bendely)
             plt.xscale('log')
             plt.yscale('log')
             plt.show()
@@ -204,7 +219,7 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
         #Integral:
             
         for i in range(1,len(proty)):
-            protint = proty[i]*(protx[i]-protx[i-1])+protint
+            protint = (proty[i]*bendely[i])*(protx[i]-protx[i-1])+protint
         
         
   #      print(f'\n L_c = {var.L_c}\n protint = {protint}\n')
