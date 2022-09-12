@@ -40,7 +40,7 @@ from calc import upsetrate
 
 #%% Default Input variables
 
-file_name        = 'spenvis_nlof_srimsi.txt'
+file_name        = 'test.txt'
 dimensions       = (20,10,5)
 X                = 3.6
 rho              = 2.33
@@ -48,8 +48,8 @@ L_min            = 10
 steps            = 1000
 transistorcnt    = 10**6
 axis_scale       = 'log'
-sat_xsection     = 10 * 10**-14
-A_t              = 42
+sat_xsection     = 10**-14
+A_t              = 60
 plot_graphs      = False
 
 
@@ -73,6 +73,9 @@ while True:
     output_variables(variables)     # Outputs calculated Variables
 
     U = upsetrate(variables , LET_data, LET_meta, Proton_data, Proton_meta) # Calculates Upsetrate
+    
 
-
-
+        
+   
+        
+      

@@ -31,20 +31,24 @@ def output_variables(v):
 
 
 def usercheck(v):
+    
+    L_th = v.L_min * ((v.dimensions[0]**2 + v.dimensions[1]**2 + v.dimensions[2]**2)**0.5)/min(v.dimensions)
+    
     loop = True
     while loop:
         print("\n")
     
         inputview = [["(1)", "w,l,h",            f'{v.dimensions[0]},{v.dimensions[1]},{v.dimensions[2]}', "μm", "Dimensions of the Sensitive Volume"],
                      ["(2)", "L_min",              v.L_min,                            "MeV*cm^2*mg^-1", "Minimum LET for an upset through largest diameter"],
-                     ["(3)", "Steps",              "{:.2e}".format(v.steps),           " - ",           "Number of iteration Steps"],
-                     ["(4)", "Transistorcount",      "{:.2e}".format(v.sVol_count),      " - ",           "Number of Sensitive Volumes/Transistors"],
-                     ["(5)", "X",                  v.X,                                "eV",            "Energy needed to create one electron-hole pair (Si: 3.6 eV; GaAs: 4.8 eV)"],
-                     ["(6)", "ρ",                  v.rho, "g/cm^3", "Density of the material the component is made of. (Only needed if nuclear proton reaction is turned on)"],
-                     ["(7)", "σ_pl", v.xsection,                    "cm^2/bit",      "Limiting Cross section of the Device (put 0 to turn off nuclear proton reaction influence)"],
-                     ["(8)", "A_t",     v.A_t  ,           "MeV", "Threshold of the proton upset"],
-                     ["(9)", "Axis scale",         v.scale,                            " - ",           "Scale of the Calculation Axis (log/lin)"],
-                     ["(10)", "Plot graphs?",        v.plot,                             "bool",          "Turn Graph Plotting on or off (use for debugging)"]]
+                     ["(3)", "L_th ",              L_th,                               "MeV*cm^2*mg^-1", "Minimum LET for an upset through smallest diameter (LET Threshold)"],
+                     ["(4)", "Steps",              "{:.2e}".format(v.steps),           " - ",           "Number of iteration Steps"],
+                     ["(5)", "Transistorcount",      "{:.2e}".format(v.sVol_count),      " - ",           "Number of Sensitive Volumes/Transistors"],
+                     ["(6)", "X",                  v.X,                                "eV",            "Energy needed to create one electron-hole pair (Si: 3.6 eV; GaAs: 4.8 eV)"],
+                     ["(7)", "ρ",                  v.rho, "g/cm^3", "Density of the material the component is made of. (Does not change the upset rate final result, only intermediate results are scaled )"],
+                     ["(8)", "σ_pl", v.xsection,                    "cm^2/bit",      "Limiting proton upset cross section of the Device (put 0 to turn off nuclear proton reaction influence)"],
+                     ["(9)", "A_t",     v.A_t  ,           "MeV", "Threshold of the proton upset"],
+                     ["(10)", "Axis scale",         v.scale,                            " - ",           "Scale of the Calculation Axis (log/lin)"],
+                     ["(11)", "Plot graphs?",        v.plot,                             "bool",          "Turn Graph Plotting on or off (use for debugging)"]]
     
         print(tabulate(inputview, headers=["","Variable","Value","Unit","Description"])) 
         
@@ -65,18 +69,25 @@ def usercheck(v):
                                                 basicinput(1., "Please enter a new value for h:")); break
                 if choice == 2: 
                                 temp = basicinput(1., "Please enter a new value for L_min:")
-                                if (temp < (1.05*(10**5))): v.L_min = temp; break
+                                if (temp < (1.05*(10**5))): v.L_min = temp; L_th = v.L_min * ((v.dimensions[0]**2 + v.dimensions[1]**2 + v.dimensions[2]**2)**0.5)/min(v.dimensions); break
                                 else: print("ERROR: Could not Compute! (L_min > L_Max)");break
-                if choice == 3: v.steps = basicinput(1, "Please enter a new value for steps:") ; break
-                if choice == 4: v.sVol_count = basicinput(1, "Please enter a new value for the number of sensitive Volumes:") ; break
-                if choice == 5: v.X = basicinput(1., "Please enter a new value for X (3.6 eV in Si, 4.8 eV in GaAs):");break
-                if choice == 6: v.rho = basicinput(1., "Please enter a new yalue vor ρ:");break
-                if choice == 7: v.xsection = basicinput(1., "Please enter a new value for the limiting cross section:");break
-                if choice == 8: v.A_t = basicinput(1., "Please enter a new value for the proton upset threshold");break
-                if choice == 9: 
+                
+                if choice == 3: 
+                                temp2 = basicinput(1., "Please enter a new value for the LET upset threshold:")
+                                temp = temp2 * (((v.dimensions[0]**2 + v.dimensions[1]**2 + v.dimensions[2]**2)**0.5)/min(v.dimensions))**-1
+                                if (temp < (1.05*(10**5))): v.L_min = temp; L_th = temp2 ; break
+                                else: print("ERROR: Could not Compute! (L_min > L_Max)");break
+                                
+                if choice == 4: v.steps = basicinput(1, "Please enter a new value for steps:") ; break
+                if choice == 5: v.sVol_count = basicinput(1, "Please enter a new value for the number of sensitive Volumes:") ; break
+                if choice == 6: v.X = basicinput(1., "Please enter a new value for X (3.6 eV in Si, 4.8 eV in GaAs):");break
+                if choice == 7: v.rho = basicinput(1., "Please enter a new yalue vor ρ:");break
+                if choice == 8: v.xsection = basicinput(1., "Please enter a new value for the limiting cross section:");break
+                if choice == 9: v.A_t = basicinput(1., "Please enter a new value for the proton upset threshold:");break
+                if choice == 10: 
                                 if (v.scale == 'log'): v.scale = "lin"; break
                                 else: v.scale = 'log'; break
-                if choice == 10: v.plot = not(v.plot); break
+                if choice == 11: v.plot = not(v.plot); break
                               
         
                 else: print("Incorrect Input. Please try again.")
@@ -127,7 +138,8 @@ def usersurvey(metabase, database):
         print("No mission Segments were found. Make sure to enter the right file name and data type before starting program.\nExiting Program..");sys.exit()
     print("------------------------------------")
     print(f'({len(segment_list)}) *Plot Data ')
-    print(f'({len(segment_list)+1}) *EXIT')
+    print(f'({len(segment_list)+1}) *Information screen')
+    print(f'({len(segment_list)+2}) *EXIT')
     while True:
         while True:
             chosenDB = (input("Which database do you want to use?\n"))
@@ -142,10 +154,13 @@ def usersurvey(metabase, database):
         if chosenDB == len(segment_list):
             for n in range(len(database)):
                 plot_this(metabase[n],database[n])
-        elif chosenDB == len(segment_list)+1: 
+        
+        elif chosenDB == len(segment_list)+1:
+            information_screen()
+        elif chosenDB == len(segment_list)+2: 
             print("Exiting Program...")
             sys.exit()
-        elif chosenDB > len(segment_list)+1:
+        elif chosenDB > len(segment_list)+2:
             print("Number too high! Try again or Exit with 'exit'")
         else: 
             for i in range(len(database)):
@@ -173,7 +188,18 @@ def usersurvey(metabase, database):
     return LET_meta, LET_data, Proton_meta, Proton_data
 
     
+def information_screen():
+    print()
+    inputview = [["SPENVIS blabla"],
+                 ["textdatei blabla"],
+                 ["Version 1.1, made by Tobias Kurz, 2022"]]
 
+    print(tabulate(inputview, headers=["Welcome to the calculation tool!"])) 
+    
+    
+    
+    
+    
 #%% SPENVIS Data handling
 
 
