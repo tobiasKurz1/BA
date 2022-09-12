@@ -32,7 +32,7 @@ def output_variables(v):
 
 def usercheck(v):
     
-    L_th = v.L_min * ((v.dimensions[0]**2 + v.dimensions[1]**2 + v.dimensions[2]**2)**0.5)/min(v.dimensions)
+    L_c = v.L_min * ((v.dimensions[0]**2 + v.dimensions[1]**2 + v.dimensions[2]**2)**0.5)/min(v.dimensions)
     
     loop = True
     while loop:
@@ -40,11 +40,11 @@ def usercheck(v):
     
         inputview = [["(1)", "w,l,h",            f'{v.dimensions[0]},{v.dimensions[1]},{v.dimensions[2]}', "μm", "Dimensions of the Sensitive Volume"],
                      ["(2)", "L_min",              v.L_min,                            "MeV*cm^2*mg^-1", "Minimum LET for an upset through largest diameter"],
-                     ["(3)", "L_th ",              L_th,                               "MeV*cm^2*mg^-1", "Minimum LET for an upset through smallest diameter (LET Threshold)"],
+                     ["(3)", "L_c ",              L_c,                               "MeV*cm^2*mg^-1", "Minimum LET for an upset through smallest diameter (critical LET)"],
                      ["(4)", "Steps",              "{:.2e}".format(v.steps),           " - ",           "Number of iteration Steps"],
                      ["(5)", "Transistorcount",      "{:.2e}".format(v.sVol_count),      " - ",           "Number of Sensitive Volumes/Transistors"],
                      ["(6)", "X",                  v.X,                                "eV",            "Energy needed to create one electron-hole pair (Si: 3.6 eV; GaAs: 4.8 eV)"],
-                     ["(7)", "ρ",                  v.rho, "g/cm^3", "Density of the material the component is made of. (Does not change the upset rate final result, only intermediate results are scaled )"],
+                     ["(7)", "ρ",                  v.rho, "g/cm^3", "Density of the material the component is made of. (Only affects intermediate results)"],
                      ["(8)", "σ_pl", v.xsection,                    "cm^2/bit",      "Limiting proton upset cross section of the Device (put 0 to turn off nuclear proton reaction influence)"],
                      ["(9)", "A_t",     v.A_t  ,           "MeV", "Threshold of the proton upset"],
                      ["(10)", "Axis scale",         v.scale,                            " - ",           "Scale of the Calculation Axis (log/lin)"],
@@ -69,13 +69,13 @@ def usercheck(v):
                                                 basicinput(1., "Please enter a new value for h:")); break
                 if choice == 2: 
                                 temp = basicinput(1., "Please enter a new value for L_min:")
-                                if (temp < (1.05*(10**5))): v.L_min = temp; L_th = v.L_min * ((v.dimensions[0]**2 + v.dimensions[1]**2 + v.dimensions[2]**2)**0.5)/min(v.dimensions); break
+                                if (temp < (1.05*(10**5))): v.L_min = temp; L_c = v.L_min * ((v.dimensions[0]**2 + v.dimensions[1]**2 + v.dimensions[2]**2)**0.5)/min(v.dimensions); break
                                 else: print("ERROR: Could not Compute! (L_min > L_Max)");break
                 
                 if choice == 3: 
                                 temp2 = basicinput(1., "Please enter a new value for the LET upset threshold:")
                                 temp = temp2 * (((v.dimensions[0]**2 + v.dimensions[1]**2 + v.dimensions[2]**2)**0.5)/min(v.dimensions))**-1
-                                if (temp < (1.05*(10**5))): v.L_min = temp; L_th = temp2 ; break
+                                if (temp < (1.05*(10**5))): v.L_min = temp; L_c = temp2 ; break
                                 else: print("ERROR: Could not Compute! (L_min > L_Max)");break
                                 
                 if choice == 4: v.steps = basicinput(1, "Please enter a new value for steps:") ; break
