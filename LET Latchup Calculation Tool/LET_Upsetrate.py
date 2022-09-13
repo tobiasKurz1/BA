@@ -51,6 +51,7 @@ axis_scale       = 'log'
 sat_xsection     = 10**-14
 A_t              = 60
 plot_graphs      = False
+switch           = (True, True)
 
 
 #%%
@@ -60,7 +61,7 @@ plot_graphs      = False
 
 (LET_meta, LET_data, Proton_meta, Proton_data) = usersurvey(metabase, database) # Read and present data from Database to choose from
 
-inputs = input_var(dimensions, X, rho, L_min, steps, transistorcnt, axis_scale, plot_graphs, sat_xsection, A_t)      #Default input variables
+inputs = input_var(dimensions, X, rho, L_min, steps, transistorcnt, axis_scale, plot_graphs, sat_xsection, A_t, switch)      #Default input variables
 
 while True:
 

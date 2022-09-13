@@ -128,58 +128,63 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
     if var.plot: plot_this(LET_meta,LET_data)
     if var.plot: plot_this(Proton_meta,Proton_data)
 
-    (difmeta, difdata) = difpld(lbound, rbound, var.steps, var.x, var.y, var.z)
+    U_LET = 0
+
+    if var.switch[0]:
+        (difmeta, difdata) = difpld(lbound, rbound, var.steps, var.x, var.y, var.z)
     
-    if var.plot: plot_this(difmeta, difdata)
+        if var.plot: plot_this(difmeta, difdata)
     
     #%%  Differential Path length distribution
    
-    func_y=[]
-    func_x = []
+        func_y=[]
+        func_x = []
     
-    if ('log') in var.scale: scale = np.logspace(np.log10(var.L_min), np.log10(var.L_max), var.steps, True)
-    if ('lin') in var.scale: scale = np.linspace(var.L_min, var.L_max, var.steps, True)
-    if (not(('lin') in var.scale) and not (('log') in var.scale)): print("ERROR!\nPlease enter scale 'lin' or 'log'.\nExiting Program now..."); sys.exit()
+        if ('log') in var.scale: scale = np.logspace(np.log10(var.L_min), np.log10(var.L_max), var.steps, True)
+        if ('lin') in var.scale: scale = np.linspace(var.L_min, var.L_max, var.steps, True)
+        if (not(('lin') in var.scale) and not (('log') in var.scale)): print("ERROR!\nPlease enter scale 'lin' or 'log'.\nExiting Program now..."); sys.exit()
     
-    p_Lscale=[]
+        p_Lscale=[]
     
     
-    for i in range(var.steps):
-        L = scale[i]
+        for i in range(var.steps):
+            L = scale[i]
        
-        p_L = (var.X/var.e)*var.Q_c/L
-        p_Lscale.append(p_L)
-        func = adamsint(L, difdata, LET_data, p_L)
-        func_y.append(func)
-        func_x.append(L)
-        print(f'\rInterpolating data {round((L-var.L_min)*100/abs(var.L_max-var.L_min))}% ...              ', end = "")
-    print("")
+            p_L = (var.X/var.e)*var.Q_c/L
+            p_Lscale.append(p_L)
+            func = adamsint(L, difdata, LET_data, p_L)
+            func_y.append(func)
+            func_x.append(L)
+            print(f'\rInterpolating data {round((L-var.L_min)*100/abs(var.L_max-var.L_min))}% ...              ', end = "")
+        print("")
    
     
-    if var.plot:
-        plt.figure(figsize=(10,8))
-        plt.suptitle(f'Function to be Integrated \n Number of Iterations: {var.steps}; Stepsize: {abs(var.L_max-var.L_min)/var.steps}')
-        plt.plot(func_x,func_y)
-        plt.xscale('log')
-        plt.show()
+        if var.plot:
+            plt.figure(figsize=(10,8))
+            plt.suptitle(f'Function to be Integrated \n Number of Iterations: {var.steps}; Stepsize: {abs(var.L_max-var.L_min)/var.steps}')
+            plt.plot(func_x,func_y)
+            plt.xscale('log')
+            plt.show()
    
 
 #%% Integral Calculation
 
-    integral = 0.
-
-    for i in range(1,var.steps):
+        integral = 0.
     
-        integral = (func_y[i])*(scale[i]-scale[i-1])+integral
-        print(f'\rCalculating integral {round(i*100/(var.steps))}% ...              ', end = "")
-
-    print("") 
+        for i in range(1,var.steps):
+        
+            integral = (func_y[i])*(scale[i]-scale[i-1])+integral
+            print(f'\rCalculating integral {round(i*100/(var.steps))}% ...              ', end = "")
     
+        print("") 
+    
+        U_LET = pi * var.A * (var.X/var.e) * var.Q_c * integral
 #%% Nuclear Proton reaction
+
 
     U_prot = 0
     
-    if not(var.xsection == 0):
+    if var.switch[1]:
         
         protint = 0
         proty = [] 
@@ -228,7 +233,7 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
         
 #%% Final Calculation 
 
-    U_LET = pi * var.A * (var.X/var.e) * var.Q_c * integral
+
 
     U = U_LET + U_prot
     

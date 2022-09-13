@@ -29,12 +29,13 @@ class calc_var:
         self.plot = input_vars.plot
         self.xsection = input_vars.xsection
         self.A_t = input_vars.A_t
+        self.switch = input_vars.switch
 
 
 #%% Classes
 
 class input_var:
-    def __init__(self, dimensions, X, rho, L_min, steps, sVol_count, scale, plot, xsection, A_t):
+    def __init__(self, dimensions, X, rho, L_min, steps, sVol_count, scale, plot, xsection, A_t, switch):
         self.dimensions = dimensions
         self.X = X
         self.rho = rho
@@ -45,6 +46,7 @@ class input_var:
         self.plot = plot
         self.xsection = xsection
         self.A_t = A_t
+        self.switch = switch
 
 class metadata:
     def __init__(self, dataStart = [], lines = [], rows = [],  number = []):

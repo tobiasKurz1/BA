@@ -40,15 +40,18 @@ def usercheck(v):
     
         inputview = [["(1)", "w,l,h",            f'{v.dimensions[0]},{v.dimensions[1]},{v.dimensions[2]}', "μm", "Dimensions of the Sensitive Volume"],
                      ["(2)", "L_min",              v.L_min,                            "MeV*cm^2*mg^-1", "Minimum LET for an upset through largest diameter"],
-                     ["(3)", "L_c ",              L_c,                               "MeV*cm^2*mg^-1", "Minimum LET for an upset through smallest diameter (critical LET)"],
+                     ["(3)", "L_c ",              L_c,                               "MeV*cm^2*mg^-1", "Minimum LET for an upset through smallest diameter (critical LET or threshold LET)"],
                      ["(4)", "Steps",              "{:.2e}".format(v.steps),           " - ",           "Number of iteration Steps"],
                      ["(5)", "Transistorcount",      "{:.2e}".format(v.sVol_count),      " - ",           "Number of Sensitive Volumes/Transistors"],
                      ["(6)", "X",                  v.X,                                "eV",            "Energy needed to create one electron-hole pair (Si: 3.6 eV; GaAs: 4.8 eV)"],
                      ["(7)", "ρ",                  v.rho, "g/cm^3", "Density of the material the component is made of. (Only affects intermediate results)"],
                      ["(8)", "σ_pl", v.xsection,                    "cm^2/bit",      "Limiting proton upset cross section of the Device (put 0 to turn off nuclear proton reaction influence)"],
                      ["(9)", "A_t",     v.A_t  ,           "MeV", "Threshold of the proton upset"],
+                     ["----"," ","",""],
                      ["(10)", "Axis scale",         v.scale,                            " - ",           "Scale of the Calculation Axis (log/lin)"],
-                     ["(11)", "Plot graphs?",        v.plot,                             "bool",          "Turn Graph Plotting on or off (use for debugging)"]]
+                     ["(11)", "LET switch", v.switch[0]," - ", "Turn LET upset calculation On or Off"],
+                     ["(12)", "Proton switch", v.switch[1]," - ", "Turn proton nuclear reaction upset calculation On or Off"],
+                     ["(13)", "Plot graphs?",        v.plot,                             "bool",          "Turn Graph Plotting on or off (use for debugging)"]]
     
         print(tabulate(inputview, headers=["","Variable","Value","Unit","Description"])) 
         
@@ -89,7 +92,9 @@ def usercheck(v):
                 if choice == 10: 
                                 if (v.scale == 'log'): v.scale = "lin"; break
                                 else: v.scale = 'log'; break
-                if choice == 11: v.plot = not(v.plot); break
+                if choice == 11: v.switch = (not(v.switch[0]), v.switch[1]);break
+                if choice == 12: v.switch = (v.switch[0], not(v.switch[1]));break
+                if choice == 13: v.plot = not(v.plot); break
                               
         
                 else: print("Incorrect Input. Please try again.")
