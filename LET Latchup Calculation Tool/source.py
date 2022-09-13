@@ -32,7 +32,7 @@ def output_variables(v):
 
 def usercheck(v):
     
-    L_c = v.L_min * ((v.dimensions[0]**2 + v.dimensions[1]**2 + v.dimensions[2]**2)**0.5)/min(v.dimensions)
+    L_c = round(v.L_min * ((v.dimensions[0]**2 + v.dimensions[1]**2 + v.dimensions[2]**2)**0.5)/min(v.dimensions),13)
     
     loop = True
     while loop:
@@ -66,7 +66,9 @@ def usercheck(v):
                 if choice == 1: 
                                 v.dimensions = (basicinput(1., "Please enter a new value for w:"),\
                                                 basicinput(1., "Please enter a new value for l:"),\
-                                                basicinput(1., "Please enter a new value for h:")); break
+                                                basicinput(1., "Please enter a new value for h:"))
+                                L_c = (v.L_min * ((v.dimensions[0]**2 + v.dimensions[1]**2 + v.dimensions[2]**2)**0.5)/min(v.dimensions))
+                                break
                 if choice == 2: 
                                 temp = basicinput(1., "Please enter a new value for L_min:")
                                 if (temp < (1.05*(10**5))): v.L_min = temp; L_c = v.L_min * ((v.dimensions[0]**2 + v.dimensions[1]**2 + v.dimensions[2]**2)**0.5)/min(v.dimensions); break
