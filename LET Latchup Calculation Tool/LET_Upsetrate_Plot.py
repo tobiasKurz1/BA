@@ -50,7 +50,7 @@ transistorcnt    = 1
 axis_scale       = 'log'
 sat_xsection     = 10**-8
 A_t              = 20
-plot_graphs      = False
+plot_graphs      = True
 switch           = (False, True)
 
 
@@ -58,6 +58,76 @@ switch           = (False, True)
 
     
 (metabase, database)=import_data(file_name,',') # SPENVIS Data
+
+import matplotlib.pyplot as plt
+
+i = 2
+plt.figure(figsize=(10,8))
+
+plt.plot(database[i].xaxis, database[i].y1axis, color='r', alpha=1, label=database[i].segment, zorder=6)
+i= i+3
+plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=1, label=database[i].segment, zorder=5)
+i= i+3
+plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=0.8, label=database[i].segment, zorder=4)
+i= i+3
+plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=0.6, label=database[i].segment, zorder=3)
+i= i+3
+plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=0.4, label=database[i].segment, zorder=2)
+i= i+3
+plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=0.2, label=database[i].segment, zorder=1)
+
+
+plt.title(f'{database[i].name} for all mission segments')
+plt.xlabel(f'{database[i].xlabel} in {database[1].xunit}') 
+plt.ylabel(f'{database[i].y1label} in {database[1].y1unit}')
+plt.grid(True)
+plt.legend()
+plt.xscale('log')
+plt.yscale('log')
+
+plt.show()
+
+
+i = 2
+plt.figure(figsize=(10,8))
+
+plt.plot(database[i].xaxis, database[i].y2axis, color='r', alpha=1, label=database[i].segment, zorder=6)
+i= i+3
+plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=1, label=database[i].segment, zorder=5)
+i= i+3
+plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=0.8, label=database[i].segment, zorder=4)
+i= i+3
+plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=0.6, label=database[i].segment, zorder=3)
+i= i+3
+plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=0.4, label=database[i].segment, zorder=2)
+i= i+3
+plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=0.2, label=database[i].segment, zorder=1)
+
+
+plt.title(f'{database[i].name} for all mission segments')
+plt.xlabel(f'{database[i].xlabel} in {database[1].xunit}') 
+plt.ylabel(f'{database[i].y2label} in {database[1].y2unit}')
+plt.grid(True)
+plt.legend()
+plt.xscale('log')
+plt.yscale('log')
+
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 (LET_meta, LET_data, Proton_meta, Proton_data) = usersurvey(metabase, database) # Read and present data from Database to choose from
 
