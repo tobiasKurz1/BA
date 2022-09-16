@@ -33,14 +33,14 @@ Functions Used:
     adamsint      : Computes the function, which is later to be integrated for the final calculation
     
 """
-from classes import input_var, calc_var
-from source import output_variables, usercheck, import_data, usersurvey #import Functions
-from calc import upsetrate
+
+from source import import_data
+
 
 
 #%% Default Input variables
 
-file_name        = 'spenvis_nlof_srimsi.txt'
+file_name        = 'spenvis_nlof_srimsi_1cm.txt'
 dimensions       = (25000,25000,2000)
 X                = 3.6
 rho              = 2.33
@@ -53,100 +53,81 @@ A_t              = 20
 plot_graphs      = True
 switch           = (False, True)
 
-
-#%%
-
-    
-(metabase, database)=import_data(file_name,',') # SPENVIS Data
-
 import matplotlib.pyplot as plt
 
-i = 2
-plt.figure(figsize=(10,8))
-
-plt.plot(database[i].xaxis, database[i].y1axis, color='r', alpha=1, label=database[i].segment, zorder=6)
-i= i+3
-plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=1, label=database[i].segment, zorder=5)
-i= i+3
-plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=0.8, label=database[i].segment, zorder=4)
-i= i+3
-plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=0.6, label=database[i].segment, zorder=3)
-i= i+3
-plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=0.4, label=database[i].segment, zorder=2)
-i= i+3
-plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=0.2, label=database[i].segment, zorder=1)
-
-
-plt.title(f'{database[i].name} for all mission segments')
-plt.xlabel(f'{database[i].xlabel} in {database[1].xunit}') 
-plt.ylabel(f'{database[i].y1label} in {database[1].y1unit}')
-plt.grid(True)
-plt.legend()
-plt.xscale('log')
-plt.yscale('log')
-
-plt.show()
-
-
-i = 2
-plt.figure(figsize=(10,8))
-
-plt.plot(database[i].xaxis, database[i].y2axis, color='r', alpha=1, label=database[i].segment, zorder=6)
-i= i+3
-plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=1, label=database[i].segment, zorder=5)
-i= i+3
-plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=0.8, label=database[i].segment, zorder=4)
-i= i+3
-plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=0.6, label=database[i].segment, zorder=3)
-i= i+3
-plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=0.4, label=database[i].segment, zorder=2)
-i= i+3
-plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=0.2, label=database[i].segment, zorder=1)
-
-
-plt.title(f'{database[i].name} for all mission segments')
-plt.xlabel(f'{database[i].xlabel} in {database[1].xunit}') 
-plt.ylabel(f'{database[i].y2label} in {database[1].y2unit}')
-plt.grid(True)
-plt.legend()
-plt.xscale('log')
-plt.yscale('log')
-
-plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-(LET_meta, LET_data, Proton_meta, Proton_data) = usersurvey(metabase, database) # Read and present data from Database to choose from
-
-inputs = input_var(dimensions, X, rho, L_min, steps, transistorcnt, axis_scale, plot_graphs, sat_xsection, A_t, switch)      #Default input variables
-
-while True:
-
-    print(f'\n\n#################### {LET_data.segment} ####################')    
-
-    inputs = usercheck(inputs)      # Function to check variables and change settings
-
-    variables = calc_var(inputs)    # Completes the list of Varibles based on Input
-
-    output_variables(variables)     # Outputs calculated Variables
-
-    U = upsetrate(variables , LET_data, LET_meta, Proton_data, Proton_meta) # Calculates Upsetrate
+#%%
+(metabase, database)=import_data(file_name,',') # SPENVIS Data
     
-
-        
+for d in range(1,3):
+    
    
+    
+    
+    
+    plt.figure(figsize=(10,8))
+    
+    i = d
+    
+    plt.plot(database[i].xaxis, database[i].y1axis, color='r', alpha=1, label=database[i].segment, zorder=6)
+    i= i+3
+    plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=1, label=database[i].segment, zorder=5)
+    i= i+3
+    plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=0.8, label=database[i].segment, zorder=4)
+    i= i+3
+    plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=0.6, label=database[i].segment, zorder=3)
+    i= i+3
+    plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=0.4, label=database[i].segment, zorder=2)
+    i= i+3
+    plt.plot(database[i].xaxis, database[i].y1axis, color='b', alpha=0.2, label=database[i].segment, zorder=1)
+    
+    
+    plt.title(f'{database[i].name} for all mission segments')
+    plt.xlabel(f'{database[i].xlabel} in {database[1].xunit}') 
+    plt.ylabel(f'{database[i].y1label} in {database[1].y1unit}')
+    plt.grid(True)
+    plt.legend()
+    plt.xscale('log')
+    plt.yscale('log')
+    
+    plt.show()
+    
+    
+    i = d
+    plt.figure(figsize=(10,8))
+    
+    plt.plot(database[i].xaxis, database[i].y2axis, color='r', alpha=1, label=database[i].segment, zorder=6)
+    i= i+3
+    plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=1, label=database[i].segment, zorder=5)
+    i= i+3
+    plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=0.8, label=database[i].segment, zorder=4)
+    i= i+3
+    plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=0.6, label=database[i].segment, zorder=3)
+    i= i+3
+    plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=0.4, label=database[i].segment, zorder=2)
+    i= i+3
+    plt.plot(database[i].xaxis, database[i].y2axis, color='b', alpha=0.2, label=database[i].segment, zorder=1)
+    
+    
+    plt.title(f'{database[i].name} for all mission segments')
+    plt.xlabel(f'{database[i].xlabel} in {database[1].xunit}') 
+    plt.ylabel(f'{database[i].y2label} in {database[1].y2unit}')
+    plt.grid(True)
+    plt.legend()
+    plt.xscale('log')
+    plt.yscale('log')
+    
+    plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
         
       

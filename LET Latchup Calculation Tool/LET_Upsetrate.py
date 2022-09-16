@@ -34,36 +34,60 @@ Functions Used:
     
 """
 from classes import input_var, calc_var
-from source import output_variables, usercheck, import_data, usersurvey #import Functions
+from source import output_variables, usercheck, import_data, usersurvey, basicinput #import Functions
 from calc import upsetrate
-
+import sys
 
 #%% Default Input variables
 
-file_name        = 'spenvis_nlof_srimsi.txt'
-dimensions       = (25000,25000,2000)
+file_name        = 'spenvis_nlof_srimsi_1cm.txt'
+dimensions       = (2.08,2.08,30)
 X                = 3.6
 rho              = 2.33
-L_min            = 10
-steps            = 100000
+L_min            = 2.3460824318873357
+steps            = 10000
 transistorcnt    = 1
 axis_scale       = 'log'
-sat_xsection     = 10**-8
-A_t              = 20
+sat_xsection     = 1.19*10**-15
+A_t              = 11
 plot_graphs      = False
-switch           = (False, True)
+switch           = (True, False) #LET, Proton
 
 
 #%%
+out = 2
+ergebnisse = []
 
+while out==2: 
     
-(metabase, database)=import_data(file_name,',') # SPENVIS Data
-
-(LET_meta, LET_data, Proton_meta, Proton_data) = usersurvey(metabase, database) # Read and present data from Database to choose from
-
+    (metabase, database)=import_data(file_name,',') # SPENVIS Data
+    
+    print(f'\nChosen file: "{file_name}"\n')
+    (LET_meta, LET_data, Proton_meta, Proton_data, out) = usersurvey(metabase, database) # Read and present data from Database to choose from
+    if out == 2 : file_name = basicinput("text", "Please enter the name of the new file: ")
+    
 inputs = input_var(dimensions, X, rho, L_min, steps, transistorcnt, axis_scale, plot_graphs, sat_xsection, A_t, switch)      #Default input variables
 
+
+inputvec = ([(1732,1732,5),3.6,2.33,99,10000,1,'log',False,1.34*10**-10,64,(True,True)],
+               ((0.028,0.028,5),3.6,2.33,99,10000,512000,'log',False,1.34*10**-10,64,(True,True)),
+               ((0.028,0.028,5),3.6,2.33,99,10000,4096000,'log',False,1.34*10**-10,64,(True,True)),
+               ((0.028,0.028,5),3.6,2.33,99,10000,2048000,'log',False,1.34*10**-10,64,(True,True)),
+               ((0.028,0.028,5),3.6,2.33,99,10000,27700000,'log',False,1.34*10**-10,64,(True,True)),
+               ((0.028,0.028,5),3.6,2.33,99,10000,4500000,'log',False,1.34*10**-10,64,(True,True)))
+it = 0
+
+if out ==1:
+    protdata = 1
+    letdata = 2
+        
+
 while True:
+    
+    if out==1: (LET_meta, LET_data, Proton_meta, Proton_data) = (metabase[letdata], database[letdata], metabase[protdata], database[protdata])
+      #  inputvector = (inputvec[it])
+    
+   # inputs = input_var(inputvector[0], inputvector[1], inputvector[2], inputvector[3],inputvector[4],inputvector[5],inputvector[6],inputvector[7],inputvector[8],inputvector[9],inputvector[10])    
 
     print(f'\n\n#################### {LET_data.segment} ####################')    
 
@@ -75,8 +99,14 @@ while True:
 
     U = upsetrate(variables , LET_data, LET_meta, Proton_data, Proton_meta) # Calculates Upsetrate
     
-
-        
+    ergebnisse.append([LET_data.segment,U])
+    
+    if out==1: 
+        protdata = protdata+3; letdata = letdata+3
+        if letdata>len(database): sys.exit()
    
-        
+    it = it+1   
+   
+
+   
       

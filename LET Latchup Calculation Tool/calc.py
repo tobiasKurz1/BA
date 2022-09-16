@@ -240,15 +240,15 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
 #%% Probability Calculations
 
 
-    print(f'\nUpset rate caused by proton nuclear reactions: {U_prot} [bit^-1 s^-1] ({round(U_prot*100/U,2)}%)')
-    print(f'Upset rate caused by Cosmic Rays (LET):        {U_LET} [bit^-1 s^-1] ({round(U_LET*100/U,2)}%)')
+    if var.switch[1]: print(f'\nUpset rate caused by proton nuclear reactions: {U_prot} [bit^-1 s^-1] ({round(U_prot*100/U,2)}%)')
+    if var.switch[0]: print(f'Upset rate caused by Cosmic Rays (LET):        {U_LET} [bit^-1 s^-1] ({round(U_LET*100/U,2)}%)')
     print(f'Total Upset Rate (Proton + LET):               {U} [bit^-1 s^-1]')
 
     eu =  2.71828182846
     err_prob = []
     
     s_to_d = 60*60*24
-    d_to_y = 265.2425
+    d_to_y = 365.2425
     
     
     n = var.sVol_count * s_to_d * d_to_y
@@ -261,7 +261,11 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
         
         print("\nProbability U is too low! Gaussian probability distribution will not give a reasonable result.")
         print(f'Most likely outcome μ={mue} [Errors per year].\nTry lowering L_min or increasing transistor count.\n')
-        return(0)
+        
+        #Poisson Distribution for 1 or more events in 10 years:
+       
+        print(f'Chance of one or more SEEs in 10 years: {round(100*(1 - eu**(-mue*10)),2)}% \nIn 1000 years: {round(100*(1 - eu**(-mue*1000)),2)}%')
+        return(U)
     
     curvex = range(round(mue-(mue*(2*sigma/mue))), round(mue+(mue*(2*sigma/mue))))
     

@@ -144,9 +144,12 @@ def usersurvey(metabase, database):
     if (len(segment_list))==1:
         print("No mission Segments were found. Make sure to enter the right file name and data type before starting program.\nExiting Program..");sys.exit()
     print("------------------------------------")
-    print(f'({len(segment_list)}) *Plot Data ')
-    print(f'({len(segment_list)+1}) *Information screen')
-    print(f'({len(segment_list)+2}) *EXIT')
+    print(f'({len(segment_list)}) Calculate for all of the Mission segments above *experimental*')
+    print(f'({len(segment_list)+1}) Plot Data ')
+    print(f'({len(segment_list)+2}) Change Input File ')
+    print(f'({len(segment_list)+3}) Information screen')
+    print(f'({len(segment_list)+4}) EXIT')
+    out = 0
     while True:
         while True:
             chosenDB = (input("Which database do you want to use?\n"))
@@ -158,16 +161,25 @@ def usersurvey(metabase, database):
                     print("Exiting Program...")
                     sys.exit()
                 else: print(f'You need to enter a Number between 0 and {len(segment_list)+1}!')
+        
         if chosenDB == len(segment_list):
+            out = 1
+            (Proton_meta, Proton_data, LET_meta, LET_data) = ([],[],[],[])
+            break
+        
+        if chosenDB == len(segment_list)+1:
             for n in range(len(database)):
                 plot_this(metabase[n],database[n])
-        
-        elif chosenDB == len(segment_list)+1:
+        if chosenDB == len(segment_list)+2:
+            out = 2
+            (Proton_meta, Proton_data, LET_meta, LET_data) = ([],[],[],[])
+            break
+        elif chosenDB == len(segment_list)+3:
             information_screen()
-        elif chosenDB == len(segment_list)+2: 
+        elif chosenDB == len(segment_list)+4: 
             print("Exiting Program...")
             sys.exit()
-        elif chosenDB > len(segment_list)+2:
+        elif chosenDB > len(segment_list)+4:
             print("Number too high! Try again or Exit with 'exit'")
         else: 
             for i in range(len(database)):
@@ -192,7 +204,7 @@ def usersurvey(metabase, database):
 
             
     
-    return LET_meta, LET_data, Proton_meta, Proton_data
+    return LET_meta, LET_data, Proton_meta, Proton_data, out
 
     
 def information_screen():
