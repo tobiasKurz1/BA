@@ -49,8 +49,8 @@ def usercheck(v):
                      ["(9)", "A_t",     v.A_t  ,           "MeV", "Threshold of the proton upset"],
                      ["----"," ","",""],
                      ["(10)", "Axis scale",         v.scale,                            " - ",           "Scale of the Calculation Axis (log/lin)"],
-                     ["(11)", "LET switch", v.switch[0]," - ", "Turn LET upset calculation On or Off"],
-                     ["(12)", "Proton switch", v.switch[1]," - ", "Turn proton nuclear reaction upset calculation On or Off"],
+                     ["(11)", "LET calculation", v.switch[0]," - ", "Turn direct LET ionization upset calculation On or Off"],
+                     ["(12)", "Proton calculation", v.switch[1]," - ", "Turn proton nuclear reaction upset calculation On or Off"],
                      ["(13)", "Plot graphs?",        v.plot,                             "bool",          "Turn Graph Plotting on or off (use for debugging)"]]
     
         print(tabulate(inputview, headers=["","Variable","Value","Unit","Description"])) 
@@ -144,7 +144,7 @@ def usersurvey(metabase, database):
     if (len(segment_list))==1:
         print("No mission Segments were found. Make sure to enter the right file name and data type before starting program.\nExiting Program..");sys.exit()
     print("------------------------------------")
-    print(f'({len(segment_list)}) Calculate for all of the Mission segments above *experimental*')
+    print(f'({len(segment_list)}) Calculate for all of the Mission segments above')
     print(f'({len(segment_list)+1}) Plot Data ')
     print(f'({len(segment_list)+2}) Change Input File ')
     print(f'({len(segment_list)+3}) Information screen')
