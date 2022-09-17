@@ -155,7 +155,7 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
             func = adamsint(L, difdata, LET_data, p_L)
             func_y.append(func)
             func_x.append(L)
-            print(f'\rInterpolating data {round((L-var.L_min)*100/abs(var.L_max-var.L_min))}% ...              ', end = "")
+            print(f'\rInterpolating data {round(i*100/(var.steps))}% ...              ', end = "")
         print("")
    
     
@@ -262,9 +262,9 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
         print("\nProbability U is too low! Gaussian probability distribution will not give a reasonable result.")
         print(f'Most likely outcome μ={mue} [Errors per year].\nTry lowering L_min or increasing transistor count.\n')
         
-        #Poisson Distribution for 1 or more events in 10 years:
+        #Poisson Distribution for 1 or more events in 1,10,100 years:
        
-        print(f'Chance of one or more SEEs in 10 years: {round(100*(1 - eu**(-mue*10)),2)}% \nIn 1000 years: {round(100*(1 - eu**(-mue*1000)),2)}%')
+        print(f'Chance of one or more SEEs in 1 year: {round(100*(1 - eu**(-mue)),2)}% \nIn 10 years: {round(100*(1 - eu**(-mue*10)),2)}% \nIn 1000 years: {round(100*(1 - eu**(-mue*1000)),2)}%')
         return(U, U_prot, U_LET, f'{mue} Errors per year, {round(100*(1 - eu**(-mue*10)),2)}% chance of more than one upset')
     
     curvex = range(round(mue-(mue*(2*sigma/mue))), round(mue+(mue*(2*sigma/mue))))

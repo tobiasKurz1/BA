@@ -42,17 +42,17 @@ import sys
 #%% Default Input variables
 
 file_name        = 'spenvis_nlof_srimsi_1cm.txt'
-dimensions       = (10000,10000,2000)
+dimensions       = (0.028,0.028,5)
 X                = 3.6
 rho              = 2.33
-L_min            = 2.3460824318873357
-steps            = 10000
-transistorcnt    = 1
+L_min            = 0.0447985951380844
+steps            = 50000
+transistorcnt    = 2048000
 axis_scale       = 'log'
-sat_xsection     = 1*10**-8
-A_t              = 60
+sat_xsection     = 5*10**-16
+A_t              = 15
 plot_graphs      = False
-switch           = (False, True) #LET, Proton
+switch           = (True, True) #LET, Proton
 
 
 #%%

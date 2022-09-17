@@ -44,14 +44,14 @@ def usercheck(v):
                      ["(4)", "Transistorcount",      "{:.2e}".format(v.sVol_count),      " - ",           "Number of Sensitive Volumes/Transistors"],
                      ["(5)", "X",                  v.X,                                "eV",            "Energy needed to create one electron-hole pair (Si: 3.6 eV; GaAs: 4.8 eV)"],
                      ["(6)", "ρ",                  v.rho, "g/cm^3", "Density of the material the component is made of. (Only affects intermediate results)"],
-                     ["(7)", "σ_pl", v.xsection,                    "cm^2/bit",      "Limiting proton upset cross section of the Device (put 0 to turn off nuclear proton reaction influence)"],
+                     ["(7)", "σ_pl", v.xsection,                    "cm^2/bit",      "Limiting proton upset cross section of the Device"],
                      ["(8)", "A_t",     v.A_t  ,           "MeV", "Threshold of the proton upset"],
                      ["----"," ","",""],
                      ["(9)", "Steps",              "{:.2e}".format(v.steps),           " - ",           "Number of iteration Steps"],
                      ["(10)", "Axis scale",         v.scale,                            " - ",           "Scale of the Calculation Axis (log/lin)"],
                      ["(11)", "LET calculation", v.switch[0]," - ", "Turn direct LET ionization upset calculation On or Off"],
                      ["(12)", "Proton calculation", v.switch[1]," - ", "Turn proton nuclear reaction upset calculation On or Off"],
-                     ["(13)", "Plot graphs?",        v.plot,                             "bool",          "Turn Graph Plotting on or off (use for debugging)"]]
+                     ["(13)", "Plot graphs?",        v.plot,                             " - ",          "Turn Graph Plotting on or off (use for debugging)"]]
     
         print(tabulate(inputview, headers=["","Variable","Value","Unit","Description"])) 
         
@@ -305,6 +305,8 @@ def get_data(meta, block):
 
 def to_excel(v,segments,Uprot,Ulet,Utot,upsets):    
     
+    print("\nExporting to 'Upset_rates.xlsx'... ")
+    
     variables = ["w","l","h","L_min","Steps","SVs","X","rho","sigma_p","A_t"]
     values = [v.dimensions[0],v.dimensions[1],v.dimensions[2],v.L_min,v.steps,v.sVol_count,v.X,v.rho,v.xsection,v.A_t]
     
@@ -323,7 +325,11 @@ def to_excel(v,segments,Uprot,Ulet,Utot,upsets):
             values.append("")
     
     data = pd.DataFrame({"Variables":variables,"Values":values,"":"","Segment":segments,"U_prot":Uprot,"U_LET":Ulet,"U":Utot,"Upsets/year":upsets})
-    data.to_excel('Updet_rates.xlsx',sheet_name='Results',index=False)
+    data.to_excel('Upset_rates.xlsx',sheet_name='Results',index=False)
+    
+    print("Export successful!")
+    
+    return()
     
     
 
