@@ -34,9 +34,10 @@ Functions Used:
     
 """
 from classes import input_var, calc_var
-from source import output_variables, usercheck, import_data, usersurvey, basicinput #import Functions
+from source import output_variables, to_excel, usercheck, import_data, usersurvey, basicinput #import Functions
 from calc import upsetrate
 import sys
+
 
 #%% Default Input variables
 
@@ -49,13 +50,16 @@ steps            = 10000
 transistorcnt    = 1
 axis_scale       = 'log'
 sat_xsection     = 1*10**-8
-A_t              = 20
+A_t              = 60
 plot_graphs      = False
 switch           = (False, True) #LET, Proton
 
 
 #%%
+
 out = 2 #Internal Option Output Variable 
+protdata = 1 #Iterators for the proton and LET datasets, if "calculate for all" is selected
+letdata = 2
 
 while out==2: 
     
@@ -66,31 +70,38 @@ while out==2:
     if out == 2 : file_name = basicinput("text", "Please enter the name of the new file: ")
     
 inputs = input_var(dimensions, X, rho, L_min, steps, transistorcnt, axis_scale, plot_graphs, sat_xsection, A_t, switch)      #Default input variables
-
-
-
-if out ==1: # Iterator for the proton and LET datasets, if "calculate for all" is selected
-    protdata = 1
-    letdata = 2
-        
+ 
+if out==1:
+        protdata = 1 #Iterators for the proton and LET datasets, if "calculate for all" is selected
+        letdata = 2
+        segments = []
+        Uprot = []
+        Ulet = []
+        Utot = []
+        upsets = []       
 
 while True:
     
-    if out==1: (LET_meta, LET_data, Proton_meta, Proton_data) = (metabase[letdata], database[letdata], metabase[protdata], database[protdata])
+    if out==1: 
+        (LET_meta, LET_data, Proton_meta, Proton_data) = (metabase[letdata], database[letdata], metabase[protdata], database[protdata])
  
     print(f'\n\n#################### {LET_data.segment} ####################')    
 
-    inputs = usercheck(inputs)      # Function to check variables and change settings
+    if (out != 1) or (protdata == 1):
+        inputs = usercheck(inputs)      # Function to check variables and change settings
+        variables = calc_var(inputs)    # Completes the list of Varibles based on Input
+        output_variables(variables)     # Outputs calculated Variables
 
-    variables = calc_var(inputs)    # Completes the list of Varibles based on Input
-
-    output_variables(variables)     # Outputs calculated Variables
-
-    U = upsetrate(variables , LET_data, LET_meta, Proton_data, Proton_meta) # Calculates Upsetrate
+    (U,Up,Ul,ups) = upsetrate(variables , LET_data, LET_meta, Proton_data, Proton_meta) # Calculates Upsetrate
     
     if out==1: 
         protdata = protdata+3; letdata = letdata+3
-        if letdata>len(database): sys.exit()
+        segments.append(LET_data.segment)
+        Uprot.append(Up)
+        Ulet.append(Ul)
+        Utot.append(U)
+        upsets.append(ups)
+        if letdata>len(database): to_excel(inputs, segments, Uprot, Ulet, Utot, upsets) ; sys.exit()
    
    
 

@@ -265,7 +265,7 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
         #Poisson Distribution for 1 or more events in 10 years:
        
         print(f'Chance of one or more SEEs in 10 years: {round(100*(1 - eu**(-mue*10)),2)}% \nIn 1000 years: {round(100*(1 - eu**(-mue*1000)),2)}%')
-        return(U)
+        return(U, U_prot, U_LET, f'{mue} Errors per year, {round(100*(1 - eu**(-mue*10)),2)}% chance of more than one upset')
     
     curvex = range(round(mue-(mue*(2*sigma/mue))), round(mue+(mue*(2*sigma/mue))))
     
@@ -294,4 +294,4 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
         
         plt.show()
     
-    return U
+    return U, U_prot, U_LET, f'{round(mue)} ± {round(mue-curvex[0])}'

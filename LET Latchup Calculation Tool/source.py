@@ -13,7 +13,7 @@ import sys
 import matplotlib.pyplot as plt
 import colorsys
 import csv
-
+import pandas as pd
 
 #%% Functions
 
@@ -144,7 +144,7 @@ def usersurvey(metabase, database):
     if (len(segment_list))==1:
         print("No mission Segments were found. Make sure to enter the right file name and data type before starting program.\nExiting Program..");sys.exit()
     print("------------------------------------")
-    print(f'({len(segment_list)}) Calculate for all of the Mission segments above')
+    print(f'({len(segment_list)}) Calculate for all of the Mission segments above and export to excel-file')
     print(f'({len(segment_list)+1}) Plot Data ')
     print(f'({len(segment_list)+2}) Change Input File ')
     print(f'({len(segment_list)+3}) Information screen')
@@ -167,10 +167,10 @@ def usersurvey(metabase, database):
             (Proton_meta, Proton_data, LET_meta, LET_data) = ([],[],[],[])
             break
         
-        if chosenDB == len(segment_list)+1:
+        elif chosenDB == len(segment_list)+1:
             for n in range(len(database)):
                 plot_this(metabase[n],database[n])
-        if chosenDB == len(segment_list)+2:
+        elif chosenDB == len(segment_list)+2:
             out = 2
             (Proton_meta, Proton_data, LET_meta, LET_data) = ([],[],[],[])
             break
@@ -303,6 +303,32 @@ def get_data(meta, block):
             l +=1
             
     return data
+
+def to_excel(v,segments,Uprot,Ulet,Utot,upsets):    
+    
+    variables = ["w","l","h","L_min","Steps","SVs","X","rho","sigma_p","A_t"]
+    values = [v.dimensions[0],v.dimensions[1],v.dimensions[2],v.L_min,v.steps,v.sVol_count,v.X,v.rho,v.xsection,v.A_t]
+    
+    dif = len(segments)-len(variables)
+    
+    if dif < 0:
+        for i in range(abs(dif)):
+            segments.append("")
+            Uprot.append("")
+            Ulet.append("")
+            upsets.append("")
+            Utot.append("")
+    if dif > 0:
+        for i in range(abs(dif)):
+            variables.append("")
+            values.append("")
+    
+    data = pd.DataFrame({"Variables":variables,"Values":values,"":"","Segment":segments,"U_prot":Uprot,"U_LET":Ulet,"U":Utot,"Upsets/year":upsets})
+    data.to_excel('Updet_rates.xlsx',sheet_name='Results',index=False)
+    
+    
+
+
 
 
 def cleanup_text(meta, data):
