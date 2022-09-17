@@ -41,13 +41,13 @@ def usercheck(v):
         inputview = [["(1)", "w,l,h",            f'{v.dimensions[0]},{v.dimensions[1]},{v.dimensions[2]}', "μm", "Dimensions of the Sensitive Volume"],
                      ["(2)", "L_min",              v.L_min,                            "MeV*cm^2*mg^-1", "Minimum LET for an upset through largest diameter"],
                      ["(3)", "L_c ",              L_c,                               "MeV*cm^2*mg^-1", "Minimum LET for an upset through smallest diameter (critical LET or threshold LET)"],
-                     ["(4)", "Steps",              "{:.2e}".format(v.steps),           " - ",           "Number of iteration Steps"],
-                     ["(5)", "Transistorcount",      "{:.2e}".format(v.sVol_count),      " - ",           "Number of Sensitive Volumes/Transistors"],
-                     ["(6)", "X",                  v.X,                                "eV",            "Energy needed to create one electron-hole pair (Si: 3.6 eV; GaAs: 4.8 eV)"],
-                     ["(7)", "ρ",                  v.rho, "g/cm^3", "Density of the material the component is made of. (Only affects intermediate results)"],
-                     ["(8)", "σ_pl", v.xsection,                    "cm^2/bit",      "Limiting proton upset cross section of the Device (put 0 to turn off nuclear proton reaction influence)"],
-                     ["(9)", "A_t",     v.A_t  ,           "MeV", "Threshold of the proton upset"],
+                     ["(4)", "Transistorcount",      "{:.2e}".format(v.sVol_count),      " - ",           "Number of Sensitive Volumes/Transistors"],
+                     ["(5)", "X",                  v.X,                                "eV",            "Energy needed to create one electron-hole pair (Si: 3.6 eV; GaAs: 4.8 eV)"],
+                     ["(6)", "ρ",                  v.rho, "g/cm^3", "Density of the material the component is made of. (Only affects intermediate results)"],
+                     ["(7)", "σ_pl", v.xsection,                    "cm^2/bit",      "Limiting proton upset cross section of the Device (put 0 to turn off nuclear proton reaction influence)"],
+                     ["(8)", "A_t",     v.A_t  ,           "MeV", "Threshold of the proton upset"],
                      ["----"," ","",""],
+                     ["(9)", "Steps",              "{:.2e}".format(v.steps),           " - ",           "Number of iteration Steps"],
                      ["(10)", "Axis scale",         v.scale,                            " - ",           "Scale of the Calculation Axis (log/lin)"],
                      ["(11)", "LET calculation", v.switch[0]," - ", "Turn direct LET ionization upset calculation On or Off"],
                      ["(12)", "Proton calculation", v.switch[1]," - ", "Turn proton nuclear reaction upset calculation On or Off"],
@@ -82,13 +82,12 @@ def usercheck(v):
                                 temp = temp2 * (((v.dimensions[0]**2 + v.dimensions[1]**2 + v.dimensions[2]**2)**0.5)/min(v.dimensions))**-1
                                 if (temp < (1.05*(10**5))): v.L_min = temp; L_c = temp2 ; break
                                 else: print("ERROR: Could not Compute! (L_min > L_Max)");break
-                                
-                if choice == 4: v.steps = basicinput(1, "Please enter a new value for steps:") ; break
-                if choice == 5: v.sVol_count = basicinput(1, "Please enter a new value for the number of sensitive Volumes:") ; break
-                if choice == 6: v.X = basicinput(1., "Please enter a new value for X (3.6 eV in Si, 4.8 eV in GaAs):");break
-                if choice == 7: v.rho = basicinput(1., "Please enter a new yalue vor ρ:");break
-                if choice == 8: v.xsection = basicinput(1., "Please enter a new value for the limiting cross section:");break
-                if choice == 9: v.A_t = basicinput(1., "Please enter a new value for the proton upset threshold:");break
+                if choice == 4: v.sVol_count = basicinput(1, "Please enter a new value for the number of sensitive Volumes:") ; break
+                if choice == 5: v.X = basicinput(1., "Please enter a new value for X (3.6 eV in Si, 4.8 eV in GaAs):");break
+                if choice == 6: v.rho = basicinput(1., "Please enter a new yalue vor ρ:");break
+                if choice == 7: v.xsection = basicinput(1., "Please enter a new value for the limiting cross section:");break
+                if choice == 8: v.A_t = basicinput(1., "Please enter a new value for the proton upset threshold:");break
+                if choice == 9: v.steps = basicinput(1, "Please enter a new value for steps:") ; break
                 if choice == 10: 
                                 if (v.scale == 'log'): v.scale = "lin"; break
                                 else: v.scale = 'log'; break
@@ -210,8 +209,8 @@ def usersurvey(metabase, database):
 def information_screen():
     print()
     inputview = [["SPENVIS blabla"],
-                 ["textdatei blabla"],
-                 ["Version 1.1, made by Tobias Kurz, 2022"]]
+                 ["When choosing the option for export to Excel, the file 'Upset_rates.xlsx' will be stored in the same folder"],
+                 ["Version 1.2, made by Tobias Kurz, 2022"]]
 
     print(tabulate(inputview, headers=["Welcome to the calculation tool!"])) 
     

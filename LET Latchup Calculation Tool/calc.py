@@ -239,7 +239,7 @@ def upsetrate(var, LET_data, LET_meta, Proton_data, Proton_meta):
     
 #%% Probability Calculations
 
-
+    print("")
     if var.switch[1]: print(f'\nUpset rate caused by proton nuclear reactions: {U_prot} [bit^-1 s^-1] ({round(U_prot*100/U,2)}%)')
     if var.switch[0]: print(f'Upset rate caused by Cosmic Rays (LET):        {U_LET} [bit^-1 s^-1] ({round(U_LET*100/U,2)}%)')
     print(f'Total Upset Rate (Proton + LET):               {U} [bit^-1 s^-1]')
