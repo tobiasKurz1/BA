@@ -3,7 +3,7 @@
 Program LET_calc
 ___________________
 
-This programm comuptes the Upset rate due to direct ionisation fo individual particles.
+This programm comuptes the Upset rate due to direct ionisation and indirect nuclear proton upsets from individual particles.
 Each bit on the chip is assumed as a sensitive Volume of dimesions w, l, h in micrometers.
 The sensitive Volume (SV) shape is idealized as a rectangular parallellopiped (RPP).
 Also assumed is that the LET of each Ion is constant over the dimensions of the critical volume.
@@ -41,16 +41,16 @@ import sys
 
 #%% Default Input variables
 
-file_name        = 'spenvis_nlof_srimsi_1cm.txt'
-dimensions       = (0.028,0.028,5)
+file_name        = 'spenvis_nlof_srimsi.txt'
+dimensions       = (0.045,0.045,5)
 X                = 3.6
 rho              = 2.33
-L_min            = 0.0447985951380844
-steps            = 50000
-transistorcnt    = 2048000
+L_min            = 0.1439883374169847
+steps            = 10000
+transistorcnt    = 2*26*10**6
 axis_scale       = 'log'
-sat_xsection     = 5*10**-16
-A_t              = 15
+sat_xsection     = 1.5*10**-14
+A_t              = 5
 plot_graphs      = False
 switch           = (True, True) #LET, Proton
 
@@ -63,7 +63,7 @@ letdata = 2
 
 while out==2: 
     
-    (metabase, database)=import_data(file_name,',') # SPENVIS Data
+    (metabase, database, file_name)=import_data(file_name,',') # SPENVIS Data
     
     print(f'\nChosen file: "{file_name}"\n')
     (LET_meta, LET_data, Proton_meta, Proton_data, out) = usersurvey(metabase, database) # Read and present data from Database to choose from

@@ -141,17 +141,21 @@ def usersurvey(metabase, database):
             print(f'({len(segment_list)-1}) {segment_list[-1]}')
 
     if (len(segment_list))==1:
-        print("No mission Segments were found. Make sure to enter the right file name and data type before starting program.\nExiting Program..");sys.exit()
+        print("No mission Segments were found. Make sure to enter the correct file name of the .txt file from SPENVIS.\n\
+The default SPENVIS output file is 'spenvis_nlof_srimsi.txt'.")
+        out = 2
+        (Proton_meta, Proton_data, LET_meta, LET_data) = ([],[],[],[])
+        return LET_meta, LET_data, Proton_meta, Proton_data, out
     print("------------------------------------")
-    print(f'({len(segment_list)}) Calculate for all of the Mission segments above and export to excel-file')
-    print(f'({len(segment_list)+1}) Plot Data ')
-    print(f'({len(segment_list)+2}) Change Input File ')
-    print(f'({len(segment_list)+3}) Information screen')
+    print(f'({len(segment_list)}) Calculate for all of the mission segments above and export results to excel-file')
+    print(f'({len(segment_list)+1}) Plot all input data ')
+    print(f'({len(segment_list)+2}) Change input file ')
+    print(f'({len(segment_list)+3}) HELP')
     print(f'({len(segment_list)+4}) EXIT')
     out = 0
     while True:
         while True:
-            chosenDB = (input("Which database do you want to use?\n"))
+            chosenDB = (input("Please choose a database or option.\n"))
             try:
                 chosenDB = int(chosenDB)
                 break
@@ -159,23 +163,23 @@ def usersurvey(metabase, database):
                 if ('exit') in chosenDB:
                     print("Exiting Program...")
                     sys.exit()
-                else: print(f'You need to enter a Number between 0 and {len(segment_list)+1}!')
+                else: print(f'You need to enter a Number between 1 and {len(segment_list)+4}!')
         
-        if chosenDB == len(segment_list):
+        if chosenDB == len(segment_list): #calculate all and export
             out = 1
             (Proton_meta, Proton_data, LET_meta, LET_data) = ([],[],[],[])
             break
         
-        elif chosenDB == len(segment_list)+1:
+        elif chosenDB == len(segment_list)+1: #plot all
             for n in range(len(database)):
                 plot_this(metabase[n],database[n])
-        elif chosenDB == len(segment_list)+2:
+        elif chosenDB == len(segment_list)+2: #change the input file
             out = 2
             (Proton_meta, Proton_data, LET_meta, LET_data) = ([],[],[],[])
             break
-        elif chosenDB == len(segment_list)+3:
-            information_screen()
-        elif chosenDB == len(segment_list)+4: 
+        elif chosenDB == len(segment_list)+3: # Help menu
+            information_screen(len(segment_list))
+        elif chosenDB == len(segment_list)+4: # Exit
             print("Exiting Program...")
             sys.exit()
         elif chosenDB > len(segment_list)+4:
@@ -206,17 +210,20 @@ def usersurvey(metabase, database):
     return LET_meta, LET_data, Proton_meta, Proton_data, out
 
     
-def information_screen():
+def information_screen(segnr):
     print()
-    inputview = [["SPENVIS blabla"],
-                 ["When choosing the option for export to Excel, the file 'Upset_rates.xlsx' will be stored in the same folder"],
-                 ["Version 1.2, made by Tobias Kurz, 2022"]]
-
-    print(tabulate(inputview, headers=["Welcome to the calculation tool!"])) 
-    
-    
-    
-    
+    print("**********************************************")
+    print("     WELCOME TO THE RAY CALCULATION TOOL!")
+    print("**********************************************\n")
+    print(f'The RAY (Radiation Single Event Effect Probability) tool was developed as part of a bachelor thesis for the IRS, Uni Stuttgart.\n\
+It is used to calculate the upset rates of electonic devices caused by highly energetic particles in space around earth.\n\n\
+To get started, any one of the detected mission segments (1 to {segnr-1}) can be drawn for calculation. The program will then give the complete list of calculation variables and settings for the upcoming upset rate calculation.\
+ After each result the user has the option to change values and redo the calculations.\nThis can be stopped by typing \'exit\'.\n\
+For calculating the upset rates for the entirety of the mission chosse option {segnr}. Here the variables are presented once. After confirming the values, all of the mission segment rates are calculated and the results are stored in \'Upset_rates.xlsx\',\
+ which is located in the program folder.\n\
+It is recommended to first check the input data for consistency. This can be done by plotting the graphs using option {segnr+1}.\n')
+    print("RAY Version 1.0\nOctober 2022 \nTobias Kurz for IRS @ Uni Stuttgart")
+    return()     
     
 #%% SPENVIS Data handling
 
@@ -368,33 +375,44 @@ def import_data(file, delimiter):
     database = []
     metabase = []
     
-    with open(file)as werte:
-        csv_reader_object = csv.reader(werte, delimiter=delimiter)
-          
-        for row in csv_reader_object:
-           
-            line += 1
+    
+    while True:
+    
+        try:
+            with open(file)as werte:
+                csv_reader_object = csv.reader(werte, delimiter=delimiter)
+                  
+                for row in csv_reader_object:
+                   
+                    line += 1
+                    
+                    if block_starts(row): # get metadata about new block
+                        meta = get_meta(row)
+                        metabase.append(meta)
+                        block = []
+                        data = []
+                        
+                    block.append(row) # fill assigned tuple with data
+                    
+                    if block_ends(row): #sort and interpret saved data, clean text, plot graphs
+                        data = get_data(meta, block)
+                        cleanup_text(meta, data)
+                        database.append(data)
+            break
             
-            if block_starts(row): # get metadata about new block
-                meta = get_meta(row)
-                metabase.append(meta)
-                block = []
-                data = []
-                
-            block.append(row) # fill assigned tuple with data
-            
-            if block_ends(row): #sort and interpret saved data, clean text, plot graphs
-                data = get_data(meta, block)
-                cleanup_text(meta, data)
-                database.append(data)
-                
+        except:  
+            print(f'No file with name \'{file}\' found. Please enter a new file name or type exit.')
+            file = basicinput("text", "New file: ")
+            if ('exit') in file:
+                print("Exiting Program...")
+                sys.exit()
                 
     metabase.reverse() #allign metabase with plot counting
     database.reverse() #allign database with plot counting
     
     
     
-    return metabase, database
+    return metabase, database, file
 
 
 def plot_this(meta, data):  
