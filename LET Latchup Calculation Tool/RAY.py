@@ -41,16 +41,16 @@ import sys
 
 #%% Default Input variables
 
-file_name        = 'spenvis_nlof_srimsi.txt'
-dimensions       = (0.045,0.045,5)
+file_name        = 'hoehenvergleich.txt'
+dimensions       = (20,10,5)
 X                = 3.6
 rho              = 2.33
-L_min            = 0.1439883374169847
-steps            = 10000
-transistorcnt    = 2*26*10**6
+L_min            = 90
+steps            = 1000
+transistorcnt    = 1
 axis_scale       = 'log'
-sat_xsection     = 1.5*10**-14
-A_t              = 5
+sat_xsection     = 10**-14
+A_t              = 60
 plot_graphs      = False
 switch           = (True, True) #LET, Proton
 

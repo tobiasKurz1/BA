@@ -173,6 +173,9 @@ The default SPENVIS output file is 'spenvis_nlof_srimsi.txt'.")
         elif chosenDB == len(segment_list)+1: #plot all
             for n in range(len(database)):
                 plot_this(metabase[n],database[n])
+            
+            verg_plot(database) #vergleichsplot der gesamtmission      
+            
         elif chosenDB == len(segment_list)+2: #change the input file
             out = 2
             (Proton_meta, Proton_data, LET_meta, LET_data) = ([],[],[],[])
@@ -501,4 +504,49 @@ def plot_this(meta, data):
         plt.legend(loc='lower center', bbox_to_anchor=(0.5,-1.1), ncol=10)
     
     
+    plt.show()
+
+
+def verg_plot(data):
+    prt = []
+    let = []
+    
+    i = 1
+    for n in range(3,len(data)):
+        if i == 2: 
+            prt.append(data[n])
+        if i == 3:
+            let.append(data[n])
+        i += 1
+        
+        if i>3: i=1
+    
+    plt.figure(figsize=(10,8))
+    
+    for n in range(len(prt)):
+        plt.plot(prt[n].xaxis, prt[n].y1axis, label = f'Seg. {prt[n].segment}')
+        
+    plt.suptitle(f'{prt[0].name}',weight='bold')
+    plt.xlabel(f'{prt[0].xlabel} in {prt[0].xunit}')
+    plt.ylabel(f'{prt[0].y1label} in {prt[0].y1unit}')
+    plt.grid(True)
+    plt.legend()
+
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.show()
+    
+    
+    plt.figure(figsize=(10,8))
+    for n in range(len(let)):
+        plt.plot(let[n].xaxis, let[n].y1axis, label = f'Seg. {let[n].segment}')
+        
+    plt.suptitle(f'{let[0].name}',weight='bold')
+    plt.xlabel(f'{let[0].xlabel} in {let[0].xunit}')
+    plt.ylabel(f'{let[0].y1label} in {let[0].y1unit}')
+    plt.grid(True)
+    plt.legend()
+
+    plt.xscale('log')
+    plt.yscale('log')
     plt.show()
